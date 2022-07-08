@@ -1,7 +1,7 @@
 # umudserver
 Universal MUD Server built in Node.js
 
-The Road So Far:
+## The Road So Far:
 
   The original online multiplayer experience for many of us was text-based Multi User Dungeons, alternatively referred to as Multi User Domains, among other names.  These were worlds mainly inspired by tabletop roleplaying games, such as Dungeons and Dragons, but eventually would grow to encompass fictional literary works and even historical settings!
 
@@ -17,10 +17,10 @@ The Road So Far:
   
   -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Main components:
-  /webapp - contains the HTML and javascript source to be served to clients
-  /server - contains the server files and scripts
-  #Database - Currently only supports MySQL backend for data storage
+### Main components:
+  * /webapp - contains the HTML and javascript source to be served to clients
+  * /server - contains the server files and scripts
+  * #Database - Currently only supports MySQL backend for data storage
   
 Current status of the project is WIP.  Webapp files are currently separate and hosted using a third-party application such as Apache, however the plan is to integrate them directly into the Server via the Express module for a completely self-contained server application.
 
