@@ -15,6 +15,8 @@ Universal MUD Server built in Node.js
   
   Still not enough???  Fine!  The client-server language is standardized and everything is served on a WebSocket - you can build your own client using whatever WebSocket-capable language or framework that you want, and just turn off the web server in the config!
   
+  
+![Demo Image](umud_demo1.png)
   -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Main components:
