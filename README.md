@@ -27,3 +27,25 @@ Universal MUD Server built in Node.js
 Current status of the project is WIP.  Webapp files are currently separate and hosted using a third-party application such as Apache, however the plan is to integrate them directly into the Server via the Express module for a completely self-contained server application.
 
 The server is data-agnostic in order to accommodate the widest level of settings, genres and gameplay styles.  The plan is to include a default database with helpful information and templates to aid server admins and developers alike, and ultimately to allow the community to create their own server packs released under their own desired licensing.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Roadmap (Very subject to change!)
+
+- Server
+  - Command Handling
+    - Permissions
+  - Data Handling
+  - Event Handling
+- Client
+  - Mapping
+  - Event Handling
+  - Local Storage
+- Admin Panel
+  - Users & Permissions
+  - Rooms
+  - Items
+  - Regions
+  - Events
+  - NPCs
+  - Mobs
