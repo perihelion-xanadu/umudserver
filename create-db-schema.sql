@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `umudserver` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `umudserver`;
 -- MySQL dump 10.13  Distrib 8.0.29, for Win64 (x86_64)
 --
 -- Host: localhost    Database: umudserver
@@ -39,6 +37,15 @@ CREATE TABLE `actions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `actions`
+--
+
+LOCK TABLES `actions` WRITE;
+/*!40000 ALTER TABLE `actions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `actions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `actions_categories`
 --
 
@@ -53,6 +60,15 @@ CREATE TABLE `actions_categories` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `actions_categories`
+--
+
+LOCK TABLES `actions_categories` WRITE;
+/*!40000 ALTER TABLE `actions_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `actions_categories` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `attributes`
@@ -74,6 +90,15 @@ CREATE TABLE `attributes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `attributes`
+--
+
+LOCK TABLES `attributes` WRITE;
+/*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `characters`
 --
 
@@ -93,6 +118,16 @@ CREATE TABLE `characters` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `characters`
+--
+
+LOCK TABLES `characters` WRITE;
+/*!40000 ALTER TABLE `characters` DISABLE KEYS */;
+INSERT INTO `characters` VALUES (1,'Perihelion',1,0,NULL);
+/*!40000 ALTER TABLE `characters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `characters_inventory`
 --
 
@@ -106,6 +141,15 @@ CREATE TABLE `characters_inventory` (
   PRIMARY KEY (`characterpkid`,`itempkid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `characters_inventory`
+--
+
+LOCK TABLES `characters_inventory` WRITE;
+/*!40000 ALTER TABLE `characters_inventory` DISABLE KEYS */;
+/*!40000 ALTER TABLE `characters_inventory` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `characters_skills`
@@ -123,6 +167,15 @@ CREATE TABLE `characters_skills` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `characters_skills`
+--
+
+LOCK TABLES `characters_skills` WRITE;
+/*!40000 ALTER TABLE `characters_skills` DISABLE KEYS */;
+/*!40000 ALTER TABLE `characters_skills` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `characters_storage`
 --
 
@@ -137,6 +190,15 @@ CREATE TABLE `characters_storage` (
   PRIMARY KEY (`resourcepkid`,`characterpkid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `characters_storage`
+--
+
+LOCK TABLES `characters_storage` WRITE;
+/*!40000 ALTER TABLE `characters_storage` DISABLE KEYS */;
+/*!40000 ALTER TABLE `characters_storage` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `items`
@@ -161,6 +223,15 @@ CREATE TABLE `items` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `items`
+--
+
+LOCK TABLES `items` WRITE;
+/*!40000 ALTER TABLE `items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `items_categories`
 --
 
@@ -177,6 +248,15 @@ CREATE TABLE `items_categories` (
   UNIQUE KEY `shortname_UNIQUE` (`shortname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `items_categories`
+--
+
+LOCK TABLES `items_categories` WRITE;
+/*!40000 ALTER TABLE `items_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `items_categories` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `items_recipes`
@@ -208,6 +288,15 @@ CREATE TABLE `items_recipes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `items_recipes`
+--
+
+LOCK TABLES `items_recipes` WRITE;
+/*!40000 ALTER TABLE `items_recipes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `items_recipes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mobs`
 --
 
@@ -236,6 +325,15 @@ CREATE TABLE `mobs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `mobs`
+--
+
+LOCK TABLES `mobs` WRITE;
+/*!40000 ALTER TABLE `mobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mobs_types`
 --
 
@@ -261,6 +359,15 @@ CREATE TABLE `mobs_types` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `mobs_types`
+--
+
+LOCK TABLES `mobs_types` WRITE;
+/*!40000 ALTER TABLE `mobs_types` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mobs_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `players`
 --
 
@@ -275,6 +382,16 @@ CREATE TABLE `players` (
   UNIQUE KEY `pkid_UNIQUE` (`pkid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `players`
+--
+
+LOCK TABLES `players` WRITE;
+/*!40000 ALTER TABLE `players` DISABLE KEYS */;
+INSERT INTO `players` VALUES (1,'Perihelion',3);
+/*!40000 ALTER TABLE `players` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `regions`
@@ -293,6 +410,16 @@ CREATE TABLE `regions` (
   UNIQUE KEY `shortname_UNIQUE` (`shortname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regions`
+--
+
+LOCK TABLES `regions` WRITE;
+/*!40000 ALTER TABLE `regions` DISABLE KEYS */;
+INSERT INTO `regions` VALUES (1,'default','default zone',NULL);
+/*!40000 ALTER TABLE `regions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `regions_rooms`
@@ -324,6 +451,16 @@ CREATE TABLE `regions_rooms` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `regions_rooms`
+--
+
+LOCK TABLES `regions_rooms` WRITE;
+/*!40000 ALTER TABLE `regions_rooms` DISABLE KEYS */;
+INSERT INTO `regions_rooms` VALUES (1,1,NULL,NULL,NULL,NULL,NULL,0,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(2,1,NULL,NULL,NULL,NULL,NULL,1,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(3,1,NULL,NULL,NULL,NULL,NULL,-1,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(4,1,NULL,NULL,NULL,NULL,NULL,0,-1,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(5,1,NULL,NULL,NULL,NULL,NULL,0,1,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(6,1,NULL,NULL,NULL,NULL,NULL,1,1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(7,1,NULL,NULL,NULL,NULL,NULL,-1,1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(8,1,NULL,NULL,NULL,NULL,NULL,1,-1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(9,1,NULL,NULL,NULL,NULL,NULL,-1,-1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(10,1,NULL,NULL,NULL,NULL,NULL,0,-2,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(11,1,NULL,NULL,NULL,NULL,NULL,0,2,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(12,1,NULL,NULL,NULL,NULL,NULL,-2,0,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(13,1,NULL,NULL,NULL,NULL,NULL,2,0,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??');
+/*!40000 ALTER TABLE `regions_rooms` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `regions_rooms_links`
 --
 
@@ -337,6 +474,16 @@ CREATE TABLE `regions_rooms_links` (
   PRIMARY KEY (`room1pkid`,`room2pkid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regions_rooms_links`
+--
+
+LOCK TABLES `regions_rooms_links` WRITE;
+/*!40000 ALTER TABLE `regions_rooms_links` DISABLE KEYS */;
+INSERT INTO `regions_rooms_links` VALUES (1,2,0),(1,3,0),(1,4,0),(1,5,0),(2,1,0),(3,1,0),(4,1,0),(5,1,0);
+/*!40000 ALTER TABLE `regions_rooms_links` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `regions_roomtemplates`
@@ -358,6 +505,15 @@ CREATE TABLE `regions_roomtemplates` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `regions_roomtemplates`
+--
+
+LOCK TABLES `regions_roomtemplates` WRITE;
+/*!40000 ALTER TABLE `regions_roomtemplates` DISABLE KEYS */;
+/*!40000 ALTER TABLE `regions_roomtemplates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `regions_roomtemplates_categories`
 --
 
@@ -373,6 +529,15 @@ CREATE TABLE `regions_roomtemplates_categories` (
   UNIQUE KEY `shortname_UNIQUE` (`shortname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regions_roomtemplates_categories`
+--
+
+LOCK TABLES `regions_roomtemplates_categories` WRITE;
+/*!40000 ALTER TABLE `regions_roomtemplates_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `regions_roomtemplates_categories` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `resources`
@@ -395,6 +560,15 @@ CREATE TABLE `resources` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `resources`
+--
+
+LOCK TABLES `resources` WRITE;
+/*!40000 ALTER TABLE `resources` DISABLE KEYS */;
+/*!40000 ALTER TABLE `resources` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `resources_categories`
 --
 
@@ -411,6 +585,15 @@ CREATE TABLE `resources_categories` (
   UNIQUE KEY `shortname_UNIQUE` (`shortname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resources_categories`
+--
+
+LOCK TABLES `resources_categories` WRITE;
+/*!40000 ALTER TABLE `resources_categories` DISABLE KEYS */;
+/*!40000 ALTER TABLE `resources_categories` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `resources_objecttypes`
@@ -430,6 +613,15 @@ CREATE TABLE `resources_objecttypes` (
   UNIQUE KEY `longname_UNIQUE` (`longname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resources_objecttypes`
+--
+
+LOCK TABLES `resources_objecttypes` WRITE;
+/*!40000 ALTER TABLE `resources_objecttypes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `resources_objecttypes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `resources_worldobjects`
@@ -452,6 +644,15 @@ CREATE TABLE `resources_worldobjects` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `resources_worldobjects`
+--
+
+LOCK TABLES `resources_worldobjects` WRITE;
+/*!40000 ALTER TABLE `resources_worldobjects` DISABLE KEYS */;
+/*!40000 ALTER TABLE `resources_worldobjects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `skills`
 --
 
@@ -469,6 +670,15 @@ CREATE TABLE `skills` (
   UNIQUE KEY `longname_UNIQUE` (`longname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `skills`
+--
+
+LOCK TABLES `skills` WRITE;
+/*!40000 ALTER TABLE `skills` DISABLE KEYS */;
+/*!40000 ALTER TABLE `skills` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -479,4 +689,4 @@ CREATE TABLE `skills` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-29 12:32:48
+-- Dump completed on 2022-07-29 15:43:00
