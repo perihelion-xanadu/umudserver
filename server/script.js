@@ -1,5 +1,16 @@
-const http = require('http');
-const sockjs = require('sockjs');
+//const http = require('http');
+//const sockjs = require('sockjs');
+
+// Admin panel
+
+const { instrument } = require('@socket.io/admin-ui');
+
+const io = require("socket.io")(3000, {
+	cors: {
+		origin: ["http://localhost:8080", "https://admin.socket.io", "http://192.168.0.110:8080", "http://megatron:8080"],
+	},
+})
+
 var mysql = require('mysql');
 var con = mysql.createConnection({
 	host: "localhost",
@@ -7,40 +18,51 @@ var con = mysql.createConnection({
 	password: "mudserver",
 	database: "umudserver"
 });
-const wss = sockjs.createServer();
+//const wss = sockjs.createServer();
 const clients = new Map();
 
 var py = 1;
 
-wss.on('connection', (ws) => {
-    console.log("connected");
-	
-    const id = uuidv4();
+
+io.on("connection", socket => {
+	console.log("connected");
+	socket.emit("serverlog", JSON.stringify({ "console": "server is connected" }));
+	const id = uuidv4();
     const color = Math.floor(Math.random() * 360);
 	const name = "Player" + py;
 	const roomid = 1;
 	const x = 0;
 	const y = 0;
 	const z = 0;
-    const metadata = { id, color, name, roomid, x, y, z };
-
-    clients.set(ws, metadata);
+	socket.data.name = name;
+	socket.data.roomid = roomid;
+	socket.data.x = x;
+	socket.data.y = y;
+	socket.data.z = z;
+	
+    const metadata = { name, roomid, x, y, z };
+	
+	clients.set(socket, metadata);
 	py += 1;
-
-    ws.on('data', (messageAsString) => {
-      const message = JSON.parse(messageAsString);
-      const metadata = clients.get(ws);
-
-      //ws.write(outbound);
-	  //broadcast(outbound);
-	  cmdParse(message.command, metadata, ws);
-	  
-    });
-
-    ws.on("close", () => {
-      clients.delete(ws);
-    });
-});
+	socket.join("room_" + metadata.roomid);
+	socket.join("global");
+	socket.on("data", messageAsString => {
+		const message = JSON.parse(messageAsString);
+		const metadata = clients.get(socket);
+		cmdParse(message.command, metadata, socket);
+	});
+	socket.on("disconnect", (reason) => {
+		console.log("client disconnected due to " + reason);
+		updateRoom();
+	})
+	
+	socket.on("close", () => {
+		console.log("client disconnected");
+		clients.delete(socket);
+		updateRoom();
+	});
+	updateRoom();
+})
 
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -49,19 +71,32 @@ function uuidv4() {
   });
 }
 
-function broadcast(message) {
-	 [...clients.keys()].forEach((client) => {
-        client.write(message);
-      });
+function servermsg(message, metadata, socket) {
+	socket.emit("serverlog", message);
 };
 
-function servermsg(message, metadata, ws) {
-	
-	ws.write(message);
-};
+function queueOutput(message, metadata, socket) {
+	socket.emit("data", message);
+}
 
-function queueOutput(message, metadata, ws) {
-	ws.write(message);
+async function updateRoom() {
+	const sockets = await io.fetchSockets();
+	for (let x=0; x<sockets.length; x++) {
+		sockets[x].emit("whochanged");
+	}
+}
+
+async function getWhoData(metadata, ws) {
+	const sockets = await io.in("room_" + metadata.roomid).fetchSockets();
+	var whoaround = new Array();
+	var y = 0;
+	for (let x=0; x<sockets.length; x++) {
+		whoaround[y] = sockets[x].data.name;
+		if (sockets[x].id == ws.id) whoaround[y] += " (You)";
+		y++;
+	}
+	var dataoutput = JSON.stringify({ "whodata": whoaround });
+	queueOutput(dataoutput, metadata, ws);
 }
 
 function getRoomData(pkid, metadata, ws) {
@@ -86,6 +121,7 @@ function getRoomData(pkid, metadata, ws) {
 		const dataoutput = JSON.stringify({ "mapdata": result });
 		queueOutput(dataoutput, metadata, ws);
 	});
+	getWhoData(metadata, ws);
 }
 
 function moveToRoom(x, y, z, metadata, ws) {
@@ -101,10 +137,15 @@ function moveToRoom(x, y, z, metadata, ws) {
 			metadata.y = y;
 			metadata.z = z;
 			queueOutput(dataoutput, metadata, ws);
+			ws.leave("room_" + result[0].room1pkid);
+			ws.join("room_" + metadata.roomid);
+			getWhoData(metadata, ws);
+			ws.to("room_" + result[0].room1pkid).emit("whochanged");
+			ws.to("room_" + result[0].room2pkid).emit("whochanged");
 		}
 		else {
-			var output = { "console": "You can't move that direction!" };
-			servermsg(JSON.stringify(output), metadata, ws);
+			var output = JSON.stringify({ "console": "You can't move that direction!"});
+			servermsg(output, metadata, ws);
 		}
 	});
 	
@@ -117,15 +158,27 @@ function cmdParse(command, metadata, ws) {
 	if (cmdArray.length > 1) {
 		switch(cmdArray[0]) {
 		case "say":
-			const outboundsay = JSON.stringify({ "console": "<" + metadata.name + ">:  " + command.substr(4)});
-			broadcast(outboundsay);
+			const outboundsay = JSON.stringify({ "console": "[" + metadata.name + "]:  " + text.substr(4)});
+			ws.to("room_" + metadata.roomid).emit("locallog", outboundsay);
+			const sayback = JSON.stringify({ "console": "[You]: " + text.substr(4) });
+			ws.emit("locallog", sayback);
+			break;
+		case "gsay":
+			const outboundgsay = JSON.stringify({ "console": "[" + metadata.name + "]:  " + text.substr(5)});
+			ws.to("global").emit("globallog", outboundgsay);
+			const gsayback = JSON.stringify({ "console": "[You]: " + text.substr(4) });
+			ws.emit("globallog", gsayback);
 			break;
 		default:
 			serveroutput = "Command Not Found";
+			break;
 		};
 	}
 	else {
-		switch(text) {
+		switch(text.toLowerCase()) {
+			case "getwhodata":
+				getWhoData(metadata, ws);
+				break;
 			case "look":
 				getRoomData(metadata.roomid, metadata, ws);
 				break;
@@ -178,16 +231,51 @@ function cmdParse(command, metadata, ws) {
 	if (typeof serveroutput === "undefined") {
 		
 	} else {
-		const newoutput = JSON.stringify({ console: serveroutput });
+		const newoutput = JSON.stringify({ "console": serveroutput });
 		servermsg(newoutput, metadata, ws);
 	}
 	
 };
 
+/*
+// comments go here
+
+wss.on('connection', (ws) => {
+    console.log("connected");
+	ws.write("connected");
+    const id = uuidv4();
+    const color = Math.floor(Math.random() * 360);
+	const name = "Player" + py;
+	const roomid = 1;
+	const x = 0;
+	const y = 0;
+	const z = 0;
+    const metadata = { id, color, name, roomid, x, y, z };
+
+    clients.set(ws, metadata);
+	py += 1;
+	
+    ws.on('data', (messageAsString) => {
+      const message = JSON.parse(messageAsString);
+      const metadata = clients.get(ws);
+
+      //ws.write(outbound);
+	  //broadcast(outbound);
+	  cmdParse(message.command, metadata, ws);
+	  
+    });
+
+    ws.on("close", () => {
+      clients.delete(ws);
+    });
+});
+
+
+
 const server = http.createServer();
 wss.installHandlers(server, {prefix: '/ws'});
 server.listen(7071, '0.0.0.0');
-
+*/
 console.log("wss up");
 
-
+instrument(io, { auth: false });

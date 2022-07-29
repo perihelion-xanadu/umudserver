@@ -2,8 +2,7 @@
 var servername = "Demo Server";
 
 
-
-
+// comments go here
 const serverstart = new Date();
 console.log(servername + " started at " + serverstart);
 
