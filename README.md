@@ -20,11 +20,11 @@ Universal MUD Server built in Node.js
   -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Main components:
-  * /webapp - contains the HTML and javascript source to be served to clients
+  * /client - contains the HTML and javascript source to be served to clients
   * /server - contains the server files and scripts
   * #Database - Currently only supports MySQL backend for data storage
   
-Current status of the project is WIP.  Webapp files are currently separate and hosted using a third-party application such as Apache, however the plan is to integrate them directly into the Server via the Express module for a completely self-contained server application.
+Current status of the project is WIP.  Client files are served by Snowpack.
 
 The server is data-agnostic in order to accommodate the widest level of settings, genres and gameplay styles.  The plan is to include a default database with helpful information and templates to aid server admins and developers alike, and ultimately to allow the community to create their own server packs released under their own desired licensing.
 
