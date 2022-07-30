@@ -43,7 +43,9 @@ socket.on("whochanged", () => {
 
 socket.on("serverlog", message => {
     let output = JSON.parse(message);
+	socket.data = output.player;
     sendToConsole(output.console);
+	updatePlayerInfo();
 })
 
 socket.on("locallog", message => {
@@ -55,6 +57,13 @@ socket.on("globallog", message => {
     let output = JSON.parse(message);
     sendToGlobal(output.console);
 })
+
+function updatePlayerInfo() {
+	var statusPlayerName = document.getElementById("statusbar_name_playername");
+	if (statusPlayerName.innerHTML != socket.data.name) {
+		statusPlayerName.innerHTML = socket.data.name;
+	}
+}
 
 function updateWho(message) {
     var whomods = document.getElementById("whomods");
@@ -82,7 +91,7 @@ function updateWho(message) {
         newwho.appendChild(newname);
         var newtitle = document.createElement("span");
         newtitle.setAttribute("class", "whoplayertitle");
-        newtitle.innerText = "<Unregistered Player>";
+        newtitle.innerText = "";
         newwho.appendChild(newtitle);
         whoplayers.appendChild(newwho);
     }
@@ -230,7 +239,8 @@ function updateMap(messageBody) {
                     newTile.setAttribute("pkid", i.originpkid);
                     newTile.innerHTML = "";
                     newTile.style.color = "white";
-                    newTile.style.backgroundColor = i.originbgcolor;
+				//	newTile.style.backgroundImage = "linear-gradient(" + i.originbgcolor + ", " + i.originbgcolor + ")";
+					newTile.style.backgroundColor = i.originbgcolor;
                 } else if (i.newx == x && i.newy == y) {
                     newTile.setAttribute("x", i.newx);
                     newTile.setAttribute("y", i.newy);
@@ -238,6 +248,8 @@ function updateMap(messageBody) {
                     newTile.innerHTML = i.maptileicon;
                     newTile.style.color = i.maptileiconcolor;
                     newTile.style.backgroundColor = i.maptilebgcolor;
+				//	newTile.style.backgroundImage = "linear-gradient(" + i.maptilebgcolor + ", " + i.maptilebgcolor + ")";
+					newTile.style.boxShadow = "0 0 7px 1px " + i.maptilebgcolor.replace(',1)', ',0.9)') + "";
                 } else {
 				}
             }

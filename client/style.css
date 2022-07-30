@@ -195,8 +195,8 @@ span.fromyou {
 #wholist li {}
 .tree1 {color: #adff2f; background-color: #008000;}
 .path1 {color: yellow; background-color: #008000;}
-#mapgrid { display: grid; border: 0; margin: 0; padding: 0; font-family: mapdraw2, MaterialSymbolsSharp; font-size: 32px; text-align: left; letter-spacing: 0; line-height: 1; grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto; }
-#mapgrid span { width: 32px; height: 32px;}
+#mapgrid { display: grid; border: 0; margin: 0; padding: 0; font-family: mapdraw2, MaterialSymbolsSharp; font-size: 32px; text-align: center; letter-spacing: 0; line-height: 1; grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto; background-blend-mode: overlay; }
+#mapgrid span { width: 32px; height: 32px; border-radius: 3px; padding: 1px; margin: -1px; vertical-align: middle;}
 button.selected {background-color: DarkGray; color: white; border: 3px inset DarkGray; border-radius: 5px;}
 #commbox #log {}
 #commbox #localchat, #commbox #globalchat {display: none;}
@@ -252,4 +252,30 @@ button.selected {background-color: DarkGray; color: white; border: 3px inset Dar
 
 .option_disabled {
 	display: none !IMPORTANT;
+}
+
+#statusbar {
+	display: inline-block;
+	color: white;
+	line-height: 12pt;
+	vertical-align: bottom;
+	height: 12pt;
+	background-color: rgba(50,255,50,0.4);
+	padding: 5px;
+}
+#statusbar label {
+	font-weight: bold;
+	font-size: 10pt;
+	margin: 0;
+	padding: 5px;
+	height: 12pt;
+}
+#statusbar span {
+	margin: 0;
+	padding: 5px;
+	padding-left: 10px;
+	margin-left: -10px;
+	font-size: 12pt;
+	font-weight: bolder;
+	color: rgba(200,100,100,1);
 }

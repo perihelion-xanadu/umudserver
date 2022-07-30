@@ -28,11 +28,8 @@ var py = 1;
 
 io.on("connection", socket => {
     console.log("connected");
-    socket.emit("serverlog", JSON.stringify({
-            "console": "server is connected"
-        }));
     const color = Math.floor(Math.random() * 360);
-    const name = "Player" + py;
+    const name = "Unregistered Player " + py;
     const roomid = 1;
     const x = 0;
     const y = 0;
@@ -42,7 +39,10 @@ io.on("connection", socket => {
     socket.data.x = x;
     socket.data.y = y;
     socket.data.z = z;
-
+	socket.emit("serverlog", JSON.stringify({
+		"console": "server is connected",
+		"player": socket.data
+	}));
     const metadata = {
         name,
         roomid,
