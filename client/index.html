@@ -10,7 +10,10 @@
 </head>
 <body>
 	<div id="menupanel">
-	
+		<div id="modoptions"
+			<label for="modoption_roomid">Display Room IDs: </label>
+			<input name="modoption_roomid" id="modoption_roomid" type="checkbox" value="true" ></input>
+		</div>
 	</div>
 	<div id="maincontainer">
 		<div id="roombox">
@@ -29,19 +32,19 @@
 			</div>
 			<div id="roomexitbox">
 				<h4>Room Exits:</h4>
-				<table id="currentroomexits" class="roomexits">
+				<div id="currentroomexits" class="roomexits">
 					
-					<tr>
-						<td class="roomexitdir">&lsaquo;North&rsaquo;</td>
-						<td class="roomexitname">Example North Room</td>
-						<td class="roomexitpkid">(10982)</td>
-					</tr>
-					<tr>
-						<td class="roomexitdir">&lsaquo;East&rsaquo;</td>
-						<td class="roomexitname">Example East Room</td>
-						<td class="roomexitpkid">(10984)</td>
-					</tr>
-				</table>
+					<p>
+						<span class="roomexitdir">&lsaquo;North&rsaquo;</span>
+						<span class="roomexitname">Example North Room</span>
+						<span class="roomexitpkid">(10982)</span>
+					</p>
+					<p>
+						<span class="roomexitdir">&lsaquo;East&rsaquo;</span>
+						<span class="roomexitname">Example East Room</span>
+						<span class="roomexitpkid">(10984)</span>
+					</p>
+				</div>
 			</div>
 		</div>
 		<div id="commbox">
@@ -114,9 +117,8 @@
 		</div>
 		<div id="mapbox">
 			<span id="mapcompass">&#0067;</span>
-			<table id="maptable">
-				
-			</table>
+			<div id="mapgrid">
+			</div>
 			<div id="mapmask">
 			</div>
 		</div>

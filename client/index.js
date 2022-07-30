@@ -8,11 +8,15 @@ const socket = io("http://192.168.0.110:3000");
 
 var socketId;
 
+document.getElementById("modoption_roomid").addEventListener("change", sendLook);
+
+function sendLook() {
+	socket.emit("data", JSON.stringify({ "command": "look" }));
+}
+
 socket.on("connect", () => {
     sendToConsole('You connected with id: ' + socket.id);
-    socket.emit("data", JSON.stringify({
-            "command": "look"
-        }));
+    sendLook();
     socketId = socket.id;
 })
 
@@ -157,6 +161,12 @@ function updateRoomData(messageBody) {
     document.getElementById("currentroomtitle").innerHTML = roomtitle;
     document.getElementById("currentroomdesc").innerHTML = roomdesc;
     document.getElementById("currentroomid").innerHTML = "(" + roomid + ")";
+	if (document.getElementById("modoption_roomid").checked == false) {
+		document.getElementById("currentroomid").setAttribute("class", "option_disabled");
+	}
+	else {
+		document.getElementById("currentroomid").setAttribute("class", "option_enabled");
+	}
 }
 
 function updateRoomExits(messageBody) {
@@ -175,17 +185,22 @@ function updateRoomExits(messageBody) {
         let originy = roomexits[i].originy;
         let originz = roomexits[i].originz;
         let exitdirection = checkExitDirection(originx, originy, originz, exitx, exity, exitz);
-        let newExit = document.createElement("tr");
-        let newExitDir = document.createElement("td");
+        let newExit = document.createElement("p");
+        let newExitDir = document.createElement("span");
         newExitDir.setAttribute("class", "roomexitdir");
         newExitDir.innerHTML = exitdirection;
         newExit.appendChild(newExitDir);
-        let newExitName = document.createElement("td");
+        let newExitName = document.createElement("span");
         newExitName.setAttribute("class", "roomexitname");
         newExitName.innerHTML = exitname;
         newExit.appendChild(newExitName);
-        let newExitPKID = document.createElement("td");
-        newExitPKID.setAttribute("class", "roomexitpkid");
+        let newExitPKID = document.createElement("span");
+		if (document.getElementById("modoption_roomid").checked == false) {
+			newExitPKID.setAttribute("class", "option_disabled");
+		}
+		else {
+			newExitPKID.setAttribute("class", "roomexitpkid");
+		}
         newExitPKID.innerHTML = "(" + exitpkid + ")";
         newExit.appendChild(newExitPKID);
         newExit.setAttribute("id", "exit_" + exitdirection);
@@ -198,15 +213,14 @@ function updateRoomExits(messageBody) {
 }
 
 function updateMap(messageBody) {
-    var currentmapdata = document.getElementById("maptable");
+    var currentmapdata = document.getElementById("mapgrid");
     while (currentmapdata.hasChildNodes()) {
         currentmapdata.removeChild(currentmapdata.firstChild);
     }
     var newmapdata = messageBody.mapdata;
     for (let y = -5; y < 6; y++) {
-        var newRow = document.createElement("tr");
         for (let x = -5; x < 6; x++) {
-            var newTile = document.createElement("td");
+            var newTile = document.createElement("span");
             newTile.setAttribute("x", x);
             newTile.setAttribute("y", y);
             for (const i of newmapdata) {
@@ -214,8 +228,8 @@ function updateMap(messageBody) {
                     newTile.setAttribute("x", i.originx);
                     newTile.setAttribute("y", i.originy);
                     newTile.setAttribute("pkid", i.originpkid);
-                    newTile.innerHTML = "&#9786;";
-                    newTile.style.color = "purple";
+                    newTile.innerHTML = "";
+                    newTile.style.color = "white";
                     newTile.style.backgroundColor = i.originbgcolor;
                 } else if (i.newx == x && i.newy == y) {
                     newTile.setAttribute("x", i.newx);
@@ -224,11 +238,11 @@ function updateMap(messageBody) {
                     newTile.innerHTML = i.maptileicon;
                     newTile.style.color = i.maptileiconcolor;
                     newTile.style.backgroundColor = i.maptilebgcolor;
-                } else {}
+                } else {
+				}
             }
-            newRow.appendChild(newTile);
+            currentmapdata.appendChild(newTile);
         }
-        currentmapdata.appendChild(newRow);
     }
 }
 

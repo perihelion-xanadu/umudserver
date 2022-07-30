@@ -127,16 +127,20 @@ span.fromyou {
 	color: white;
 	text-align: center;
 }
-#roomexitbox h4 {
+#roomexitbox {
 	position: absolute;
-	bottom: 130px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+#roomexitbox h4 {
 	text-align: center;
 	left: 0;
 	right: 0;
 }
 #mapmask {
 	position: absolute;
-	z-index: 2;
+	z-index: -1;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -154,10 +158,10 @@ span.fromyou {
 #roomobject tr {padding: 0; margin: 0; margin-top: 10px; line-height: 1; text-align: left; font-size: 0.7em;}
 #roomobject .roomobjectpkid {color: yellow; }
 #roomobject .roomobjectdesc {color: orange; }
-#roombox .roomexits {position: absolute; bottom: 10px; left: 5px; padding: 0; margin: 0; line-height: 1; text-align: left; }
-.roomexits {list-style-type: none; }
+#currentroomexits { bottom: 10px; width: 100%; padding: 0; margin: 0; line-height: 1; text-align: left; }
+.roomexits p {display: grid; grid-template-columns: 20% 70% 10%; margin: 0; padding: 0; margin-bottom: 5px;}
+.roomexits p:hover {color: green; background-color: yellow; cursor: pointer;}
 .roomexitdir { color: yellow; }
-.roomexitdir:hover {color: green; background-color: yellow; cursor: pointer;}
 .roomexitname { color: DodgerBlue; }
 .roomexitpkid { color: green; }
 #whobox {
@@ -191,8 +195,8 @@ span.fromyou {
 #wholist li {}
 .tree1 {color: #adff2f; background-color: #008000;}
 .path1 {color: yellow; background-color: #008000;}
-#mapbox table { border-collapse: collapse; border: 0; margin: 0; padding: 0; font-family: mapdraw2; font-size: 30px; text-align: left; letter-spacing: 0; line-height: 1;}
-#mapbox td { border: 0; margin: 0; padding: 0; height: 30px; width: 30px; }
+#mapgrid { display: grid; border: 0; margin: 0; padding: 0; font-family: mapdraw2, MaterialSymbolsSharp; font-size: 32px; text-align: left; letter-spacing: 0; line-height: 1; grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto; }
+#mapgrid span { width: 32px; height: 32px;}
 button.selected {background-color: DarkGray; color: white; border: 3px inset DarkGray; border-radius: 5px;}
 #commbox #log {}
 #commbox #localchat, #commbox #globalchat {display: none;}
@@ -234,4 +238,18 @@ button.selected {background-color: DarkGray; color: white; border: 3px inset Dar
 }
 #commboxbar button {
 	flex: 1;
+}
+
+#modoptions {
+	color: white;
+	font-size: 10pt;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	outline: 1px dotted rgba(255,255,255,0.3);
+	padding: 5px;
+}
+
+.option_disabled {
+	display: none !IMPORTANT;
 }

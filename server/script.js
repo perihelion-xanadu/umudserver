@@ -1,10 +1,14 @@
+const fs = require('fs');
+var rawservercfg = fs.readFileSync('server.cfg');
+var servercfg = JSON.parse(rawservercfg); 
+
 // Admin panel
 
 const {
     instrument
 } = require('@socket.io/admin-ui');
 
-const io = require("socket.io")(3000, {
+const io = require("socket.io")(servercfg.server_port, {
     cors: {
         origin: ["http://localhost:8080", "https://admin.socket.io", "http://192.168.0.110:8080", "http://megatron:8080"],
     },
@@ -12,10 +16,10 @@ const io = require("socket.io")(3000, {
 
 var mysql = require('mysql');
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "mudserver",
-    password: "mudserver",
-    database: "umudserver"
+    host: servercfg.server_backend_mysql_host,
+    user: servercfg.server_backend_mysql_username,
+    password: servercfg.server_backend_mysql_password,
+    database: servercfg.server_backend_mysql_dbo
 });
 
 const clients = new Map();
