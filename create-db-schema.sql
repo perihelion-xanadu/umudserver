@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `umudserver` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `umudserver`;
 -- MySQL dump 10.13  Distrib 8.0.29, for Win64 (x86_64)
 --
 -- Host: localhost    Database: umudserver
@@ -111,6 +113,8 @@ CREATE TABLE `characters` (
   `playerpkid` int NOT NULL,
   `currentroompkid` int NOT NULL,
   `modlevel` int DEFAULT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `tag` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`pkid`),
   UNIQUE KEY `pkid_UNIQUE` (`pkid`),
   UNIQUE KEY `name_UNIQUE` (`name`)
@@ -123,7 +127,7 @@ CREATE TABLE `characters` (
 
 LOCK TABLES `characters` WRITE;
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (1,'Perihelion',1,0,NULL);
+INSERT INTO `characters` VALUES (1,'Perihelion',1,4,NULL,'Founder','<ADMIN>');
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -456,7 +460,7 @@ CREATE TABLE `regions_rooms` (
 
 LOCK TABLES `regions_rooms` WRITE;
 /*!40000 ALTER TABLE `regions_rooms` DISABLE KEYS */;
-INSERT INTO `regions_rooms` VALUES (1,1,NULL,NULL,NULL,NULL,NULL,0,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(2,1,NULL,NULL,NULL,NULL,NULL,1,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(3,1,NULL,NULL,NULL,NULL,NULL,-1,0,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(4,1,NULL,NULL,NULL,NULL,NULL,0,-1,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(5,1,NULL,NULL,NULL,NULL,NULL,0,1,0,1,'&#0058;','black','ForestGreen','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(6,1,NULL,NULL,NULL,NULL,NULL,1,1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(7,1,NULL,NULL,NULL,NULL,NULL,-1,1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(8,1,NULL,NULL,NULL,NULL,NULL,1,-1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(9,1,NULL,NULL,NULL,NULL,NULL,-1,-1,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(10,1,NULL,NULL,NULL,NULL,NULL,0,-2,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(11,1,NULL,NULL,NULL,NULL,NULL,0,2,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(12,1,NULL,NULL,NULL,NULL,NULL,-2,0,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??'),(13,1,NULL,NULL,NULL,NULL,NULL,2,0,0,1,'&#0053;','DarkSlateGray','ForestGreen','IMPASSABLE','How did you get here??');
+INSERT INTO `regions_rooms` VALUES (1,1,NULL,NULL,NULL,NULL,NULL,0,0,0,1,'&#0058;','black','rgba(34,139,34,1)','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(2,1,NULL,NULL,NULL,NULL,NULL,1,0,0,1,'&#0058;','black','rgba(34,139,34,1)','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(3,1,NULL,NULL,NULL,NULL,NULL,-1,0,0,1,'&#0058;','black','rgba(34,139,34,1)','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(4,1,NULL,NULL,NULL,NULL,NULL,0,-1,0,1,'&#0058;','black','rgba(34,139,34,1)','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(5,1,NULL,NULL,NULL,NULL,NULL,0,1,0,1,'&#0058;','black','rgba(34,139,34,1)','Example Room Title','This is an example room description. It may contain variable text based on saved parameters, or may be completely created from scratch. Either way, you can see plenty of opportunities for growth nearby!'),(6,1,NULL,NULL,NULL,NULL,NULL,1,1,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(7,1,NULL,NULL,NULL,NULL,NULL,-1,1,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(8,1,NULL,NULL,NULL,NULL,NULL,1,-1,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(9,1,NULL,NULL,NULL,NULL,NULL,-1,-1,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(10,1,NULL,NULL,NULL,NULL,NULL,0,-2,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(11,1,NULL,NULL,NULL,NULL,NULL,0,2,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(12,1,NULL,NULL,NULL,NULL,NULL,-2,0,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??'),(13,1,NULL,NULL,NULL,NULL,NULL,2,0,0,1,'&#0053;','DarkSlateGray','rgba(139,69,19,1)','IMPASSABLE','How did you get here??');
 /*!40000 ALTER TABLE `regions_rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -689,4 +693,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-29 15:43:00
+-- Dump completed on 2022-07-31  3:37:09

@@ -24,14 +24,32 @@ socket.on("data", message => {
     const test = JSON.parse(message);
     for (let i in test) {
         if (i == "roomdata")
-            updateRoomData(test)
+			{ updateRoomData(test) }
 		else if (i == "roomexits")
-                updateRoomExits(test)
-			else if (i == "mapdata")
-                    updateMap(test);
-                else if (i == "whodata")
-                    updateWho(test);
+			{ updateRoomExits(test) }
+		else if (i == "mapdata")
+			{ updateMap(test); }
+        else if (i == "whodata")
+			{ updateWho(test); }
     }
+})
+
+socket.on("loggedIn", character => {
+	socket.data.name = character.name;
+	socket.data.roomid = character.roomid;
+	socket.data.title = character.title;
+	socket.data.tag = character.tag;
+	socket.data.x = character.x;
+	socket.data.y = character.y;
+	socket.data.z = character.z;
+	updatePlayerInfo();
+	document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	setCookie("username", character.name, 1);
+})
+
+socket.on("playerinfo", message => {
+	socket.data = message;
+	updatePlayerInfo();
 })
 
 socket.on("whochanged", () => {
@@ -43,9 +61,7 @@ socket.on("whochanged", () => {
 
 socket.on("serverlog", message => {
     let output = JSON.parse(message);
-	socket.data = output.player;
     sendToConsole(output.console);
-	updatePlayerInfo();
 })
 
 socket.on("locallog", message => {
@@ -58,10 +74,46 @@ socket.on("globallog", message => {
     sendToGlobal(output.console);
 })
 
+function setCookie(cname, cvalue, exdays) {
+	const d = new Date();
+	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	let expires = "expires=" + d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+	let name = cname + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i <ca.length; i++) {
+	let c = ca[i];
+	while (c.charAt(0) == ' ') {
+	  c = c.substring(1);
+	}
+	if (c.indexOf(name) == 0) {
+	  return c.substring(name.length, c.length);
+	}
+	}
+	return "";
+}
+
+function checkCookie() {
+  let username = getCookie("username");
+  if (username != "") {
+
+  } else {
+    username = socket.data.name;
+    if (username != "" && username != null) {
+      setCookie("username", username, 1);
+    }
+  }
+}
+
 function updatePlayerInfo() {
 	var statusPlayerName = document.getElementById("statusbar_name_playername");
 	if (statusPlayerName.innerHTML != socket.data.name) {
 		statusPlayerName.innerHTML = socket.data.name;
+		checkCookie();
 	}
 }
 
@@ -83,15 +135,15 @@ function updateWho(message) {
         newwho.setAttribute("class", "whoplayer");
         var newtag = document.createElement("span");
         newtag.setAttribute("class", "whoplayertag");
-        newtag.innerHTML = "";
+        newtag.innerText = message.whodata[i].tag;
         newwho.appendChild(newtag);
         var newname = document.createElement("span");
         newname.setAttribute("class", "whoplayername");
-        newname.innerHTML = message.whodata[i];
+        newname.innerHTML = message.whodata[i].name;
         newwho.appendChild(newname);
         var newtitle = document.createElement("span");
         newtitle.setAttribute("class", "whoplayertitle");
-        newtitle.innerText = "";
+        newtitle.innerText = message.whodata[i].title;
         newwho.appendChild(newtitle);
         whoplayers.appendChild(newwho);
     }

@@ -46,6 +46,7 @@ body {
 	background-color: #2a2b2b;
 	position: relative;
 	min-height: 200px;
+	max-height: 450px;
 	overflow: auto;
 	padding: 5px;
 }
@@ -160,10 +161,10 @@ span.fromyou {
 #roomobject .roomobjectdesc {color: orange; }
 #currentroomexits { bottom: 10px; width: 100%; padding: 0; margin: 0; line-height: 1; text-align: left; }
 .roomexits p {display: grid; grid-template-columns: 20% 70% 10%; margin: 0; padding: 0; margin-bottom: 5px;}
-.roomexits p:hover {color: green; background-color: yellow; cursor: pointer;}
 .roomexitdir { color: yellow; }
 .roomexitname { color: DodgerBlue; }
 .roomexitpkid { color: green; }
+.roomexits p:hover { background-color: rgba(150,150,20,0.6); cursor: pointer;}
 #whobox {
 	position: absolute; 
 	display: inline-block;
@@ -186,7 +187,7 @@ span.fromyou {
 .whoadmintag {color: FireBrick; font-weight: bold; }
 .whoadminname {color: DodgerBlue; font-weight: bold; }
 .whoadmintitle {color: Maroon; font-weight: normal; }
-.whoplayertag {color: Yellow; font-weight: normal; }
+.whoplayertag {color: Yellow; font-weight: normal; margin-right: 10px; }
 .whoplayername {color: LightBlue; font-weight: normal; }
 .whoplayertitle {color: MediumSeaGreen; font-weight: normal; margin-left: 10px; }
 .whomobtag {color: Orange; font-weight: normal; }

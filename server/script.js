@@ -14,16 +14,18 @@ const io = require("socket.io")(servercfg.server_port, {
     },
 })
 
-var mysql = require('mysql');
-var con = mysql.createConnection({
-    host: servercfg.server_backend_mysql_host,
+const mysql = require('mysql');
+const util = require('util');
+const con = mysql.createConnection({
+	host: servercfg.server_backend_mysql_host,
     user: servercfg.server_backend_mysql_username,
     password: servercfg.server_backend_mysql_password,
     database: servercfg.server_backend_mysql_dbo
 });
 
-const clients = new Map();
+const query = util.promisify(con.query).bind(con);
 
+const clients = new Map();
 var py = 1;
 
 io.on("connection", socket => {
@@ -34,24 +36,31 @@ io.on("connection", socket => {
     const x = 0;
     const y = 0;
     const z = 0;
+	const title = "Unregistered User";
+	const tag = "";
     socket.data.name = name;
     socket.data.roomid = roomid;
     socket.data.x = x;
     socket.data.y = y;
     socket.data.z = z;
+	socket.data.title = title;
+	socket.data.tag = tag;
+	
 	socket.emit("serverlog", JSON.stringify({
-		"console": "server is connected",
-		"player": socket.data
+		"console": "server is connected"
 	}));
     const metadata = {
         name,
         roomid,
         x,
         y,
-        z
+        z,
+		title,
+		tag
     };
 
     clients.set(socket, metadata);
+	
     py += 1;
     socket.join("room_" + metadata.roomid);
     socket.join("global");
@@ -73,6 +82,49 @@ io.on("connection", socket => {
     updateRoom();
 })
 
+async function loginCharacter(name, metadata, ws) {
+	const player = new Object();
+	try {
+		const rows = await query("SELECT * FROM characters WHERE name = '" + name + "'");
+		player.name = rows[0].name;
+		player.tag = rows[0].tag;
+		player.title = rows[0].title;
+		player.roomid = rows[0].currentroompkid;
+	} finally {
+		metadata.name = player.name;
+		metadata.roomid = player.roomid;
+		metadata.title = player.title;
+		metadata.tag = player.tag;
+		charData2(player, metadata, ws);
+	}
+}
+
+async function charData2(player, metadata, ws) {
+	try {
+		const rows = await query("SELECT * FROM regions_rooms WHERE pkid = " + player.roomid);
+		player.x = rows[0].x;
+		player.y = rows[0].y;
+		player.z = rows[0].z;
+	} finally {
+		metadata.x = player.x;
+		metadata.y = player.y;
+		metadata.z = player.z;
+		ws.data = player;
+		ws.emit("loggedIn", player);
+		clients.set(ws, player);
+		roomData(player.roomid, metadata, ws);
+		ws.join("room_" + metadata.roomid);
+	}
+}
+
+async function updateCharacterRoom(metadata, ws) {
+	try {
+		const rows = await query("UPDATE characters SET currentroompkid = " + metadata.roomid + " WHERE name = '" + metadata.name + "'");
+	} finally {
+		console.log("Character " + metadata.name + " updated.");
+	}
+}
+
 function servermsg(message, metadata, socket) {
     socket.emit("serverlog", message);
 };
@@ -85,17 +137,21 @@ async function updateRoom() {
     const sockets = await io.fetchSockets();
     for (let x = 0; x < sockets.length; x++) {
         sockets[x].emit("whochanged");
+		sockets[x].emit("playerinfo", sockets[x].data);
     }
 }
 
 async function getWhoData(metadata, ws) {
     const sockets = await io.in("room_" + metadata.roomid).fetchSockets();
-    var whoaround = new Array();
+    var whoaround = [];
     var y = 0;
     for (let x = 0; x < sockets.length; x++) {
-        whoaround[y] = sockets[x].data.name;
+		whoaround[y] = {};
+        whoaround[y]['name'] = sockets[x].data.name;
+		whoaround[y]['tag'] = sockets[x].data.tag;
+		whoaround[y]['title'] = sockets[x].data.title;
         if (sockets[x].id == ws.id)
-            whoaround[y] += " (You)";
+            whoaround[y]['name'] += " (You)";
         y++;
     }
     var dataoutput = JSON.stringify({
@@ -104,69 +160,77 @@ async function getWhoData(metadata, ws) {
     queueOutput(dataoutput, metadata, ws);
 }
 
-function getRoomData(pkid, metadata, ws) {
-    con.query("SELECT * FROM regions_rooms WHERE PKID = " + pkid, (err, result) => {
-        if (err) {
-            return console.error(err.message);
-        }
+async function roomData(pkid, metadata, ws) {
+	try {
+		const rows = await query("SELECT * FROM regions_rooms WHERE PKID = " + pkid);
         const dataoutput = JSON.stringify({
-            "roomdata": result[0]
+            "roomdata": rows[0]
         });
         queueOutput(dataoutput, metadata, ws);
-    });
-    con.query("SELECT RL.*, RM.*, RMO.x AS originx, RMO.y AS originy, RMO.z AS originz FROM regions_rooms_links AS RL INNER JOIN regions_rooms RM ON RM.pkid = RL.room2pkid INNER JOIN regions_rooms RMO ON RMO.pkid = RL.room1pkid WHERE room1pkid = " + pkid + " ORDER BY RM.y ASC", (err, result) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        const dataoutput = JSON.stringify({
-            "roomexits": result
-        });
-        queueOutput(dataoutput, metadata, ws);
-    });
-    con.query("SELECT DISTINCT RO.x AS originx, RO.y AS originy, RO.z AS originz, RL.x AS newx, RL.y AS newy, RL.z AS newz, RL.maptileicon, RL.maptileiconcolor, RL.maptilebgcolor, RO.pkid AS originpkid, RL.pkid AS newpkid, RO.maptileicon AS originicon, RO.maptileiconcolor AS origincolor, RO.maptilebgcolor AS originbgcolor FROM regions_rooms RL INNER JOIN regions_rooms RO ON RO.pkid = " + pkid + " WHERE RL.x BETWEEN (RO.x - 5) AND (RO.x + 5) AND RL.y BETWEEN (RO.y - 5) AND (RO.y + 5) AND RL.z = RO.z ORDER BY RL.x ASC, RL.y ASC, RL.z ASC", (err, result) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        const dataoutput = JSON.stringify({
-            "mapdata": result
-        });
-        queueOutput(dataoutput, metadata, ws);
-    });
-    getWhoData(metadata, ws);
+	} finally {
+		roomExits(pkid, metadata, ws);
+	}
 }
 
-function moveToRoom(x, y, z, metadata, ws) {
-    con.query("SELECT * FROM regions_rooms_links RRL INNER JOIN regions_rooms RM ON RM.pkid = RRL.room2pkid WHERE room1pkid = " + metadata.roomid + " AND RM.x = " + x + " AND RM.y = " + y + " AND RM.z = " + z, (err, result) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        if (result.length === 1) {
+async function roomExits(pkid, metadata, ws) {
+	try {
+		const rows = await query("SELECT RL.*, RM.*, RMO.x AS originx, RMO.y AS originy, RMO.z AS originz FROM regions_rooms_links AS RL INNER JOIN regions_rooms RM ON RM.pkid = RL.room2pkid INNER JOIN regions_rooms RMO ON RMO.pkid = RL.room1pkid WHERE room1pkid = " + pkid + " ORDER BY RM.y ASC");
+        const dataoutput = JSON.stringify({
+            "roomexits": rows
+        });
+        queueOutput(dataoutput, metadata, ws);
+	} finally {
+		mapData(pkid, metadata, ws);
+	}
+}
+
+async function mapData(pkid, metadata, ws) {
+	try {
+		const rows = await query("SELECT DISTINCT RO.x AS originx, RO.y AS originy, RO.z AS originz, RL.x AS newx, RL.y AS newy, RL.z AS newz, RL.maptileicon, RL.maptileiconcolor, RL.maptilebgcolor, RO.pkid AS originpkid, RL.pkid AS newpkid, RO.maptileicon AS originicon, RO.maptileiconcolor AS origincolor, RO.maptilebgcolor AS originbgcolor FROM regions_rooms RL INNER JOIN regions_rooms RO ON RO.pkid = " + pkid + " WHERE RL.x BETWEEN (RO.x - 5) AND (RO.x + 5) AND RL.y BETWEEN (RO.y - 5) AND (RO.y + 5) AND RL.z = RO.z ORDER BY RL.x ASC, RL.y ASC, RL.z ASC");
+        const dataoutput = JSON.stringify({
+            "mapdata": rows
+        });
+        queueOutput(dataoutput, metadata, ws);
+	} finally {
+		getWhoData(metadata, ws);
+	}
+}
+
+async function moveToRoom(x, y, z, metadata, ws) {
+	try {
+		const rows = await query("SELECT * FROM regions_rooms_links RRL INNER JOIN regions_rooms RM ON RM.pkid = RRL.room2pkid WHERE room1pkid = " + metadata.roomid + " AND RM.x = " + x + " AND RM.y = " + y + " AND RM.z = " + z);
+        if (rows.length === 1) {
             const dataoutput = JSON.stringify({
                 "moveresult": "success",
-                "newpkid": result[0].room2pkid
+                "newpkid": rows[0].room2pkid
             });
-            getRoomData(result[0].room2pkid, metadata, ws);
-            metadata.roomid = result[0].room2pkid;
+            roomData(rows[0].room2pkid, metadata, ws);
+            metadata.roomid = rows[0].room2pkid;
             metadata.x = x;
             metadata.y = y;
             metadata.z = z;
             queueOutput(dataoutput, metadata, ws);
-            ws.leave("room_" + result[0].room1pkid);
+            ws.leave("room_" + rows[0].room1pkid);
             ws.join("room_" + metadata.roomid);
             getWhoData(metadata, ws);
-            ws.to("room_" + result[0].room1pkid).emit("whochanged");
-            ws.to("room_" + result[0].room2pkid).emit("whochanged");
+            ws.to("room_" + rows[0].room1pkid).emit("whochanged");
+            ws.to("room_" + rows[0].room2pkid).emit("whochanged");
+			clients.set(ws, metadata);
+			if (metadata.name.includes("Unregistered")) {
+				
+			} else { updateCharacterRoom(metadata, ws); }
         } else {
             var output = JSON.stringify({
                 "console": "You can't move that direction!"
             });
             servermsg(output, metadata, ws);
         }
-    });
+    } finally {
+		
+	}
+}
 
-};
-
-function cmdParse(command, metadata, ws) {
+async function cmdParse(command, metadata, ws) {
     const text = command;
     const cmdArray = text.split(" ");
     var serveroutput;
@@ -192,6 +256,12 @@ function cmdParse(command, metadata, ws) {
             });
             ws.emit("globallog", gsayback);
             break;
+		case "login":
+			if (cmdArray[1] != "" && cmdArray[1] != undefined) {
+				var name = cmdArray[1];
+				loginCharacter(name, metadata, ws);
+			}
+			break;
         default:
             serveroutput = "Command Not Found";
             break;
@@ -202,7 +272,8 @@ function cmdParse(command, metadata, ws) {
             getWhoData(metadata, ws);
             break;
         case "look":
-            getRoomData(metadata.roomid, metadata, ws);
+		case "l":
+            roomData(metadata.roomid, metadata, ws);
             break;
         case "n":
         case "north":
