@@ -38,7 +38,7 @@ Command Structure:
 	Commands are dictated by the 'actions' table, which enables the actual server code to remain as universal as possible.  Ideally, the entire command structure should be moddable via the database.  This will allow server admins to add new Websocket listeners and emitters on-the-fly without ever having to touch the Node.js code itself.
 
 Server Presets:
-	Server Presets are pre-configured sets of data to assist with implementing Attributes and Skills, and possibly other factors.  This enables the Administrator to select which systems(s) will be in use for the server and how they will interact with one another.
+	Server Presets are pre-configured sets of data to assist with implementing Attributes and Skills, and possibly other elements.  This enables the Administrator to select which systems(s) will be in use for the server and how they will interact with one another.  Systems can also be customized or even made from scratch!
 	
 	For example, a server might be configured to use the S.P.E.C.I.A.L. Attribute system made famous by the Fallout series of games, which features seven distinct attributes ranging in value from 1 to 10.  The server might then be configured to utilize the Skills system from the d20 Standard tabletop roleplaying system (which is based on a six-attribute system ranging in value anywhere from 0 to 40+), with a middle tier translation set to make the two compatible.
 
@@ -46,7 +46,7 @@ Server Presets:
 
 ## To Do Next:
 	- Disconnect MySQL after inactivity timeout
-	- Standardize Websocket Commands
+	- Standardize Websocket Commands Based on Actions
 
 
 ## Roadmap (Very subject to change!)
