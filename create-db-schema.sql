@@ -44,6 +44,7 @@ CREATE TABLE `actions` (
 
 LOCK TABLES `actions` WRITE;
 /*!40000 ALTER TABLE `actions` DISABLE KEYS */;
+INSERT INTO `actions` VALUES ('createCharacter','Add a new Character to a Player account.',0,0,0,'name','playerpkid','chardata',0),('createPlayer','Add a new Player account.',0,0,0,'name',NULL,NULL,0),('globalSay','Speak with other players in the server.',0,0,0,'origincharacter','regionpkid',NULL,1),('interactWithObject','Interact with a world object.',0,0,0,'objectpkid','actions',NULL,1),('localSay','Speak with other players in the same room.',0,0,0,'origincharacter','roompkid',NULL,1),('loginCharacter','Log in a character.',0,0,0,'pkid',NULL,NULL,0),('loginPlayer','Log in with a player account.',0,0,0,'pkid',NULL,NULL,0),('look','Look around and obtain information about your surroundings.',0,0,0,'roompkid',NULL,NULL,1),('moveDirection','Move in a given direction from one room to another.',0,0,0,'direction','modifiers',NULL,1),('registerStart','Start the registration process.',0,0,0,NULL,NULL,NULL,0);
 /*!40000 ALTER TABLE `actions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -69,6 +70,7 @@ CREATE TABLE `actions_categories` (
 
 LOCK TABLES `actions_categories` WRITE;
 /*!40000 ALTER TABLE `actions_categories` DISABLE KEYS */;
+INSERT INTO `actions_categories` VALUES (0,'system','system','built-in actions'),(1,'general','general','generic actions');
 /*!40000 ALTER TABLE `actions_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,7 +129,7 @@ CREATE TABLE `characters` (
 
 LOCK TABLES `characters` WRITE;
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (1,'Perihelion',1,4,NULL,'Founder','<ADMIN>');
+INSERT INTO `characters` VALUES (1,'Perihelion',1,1,NULL,'Founder','<ADMIN>');
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -640,11 +642,13 @@ CREATE TABLE `resources_worldobjects` (
   `longname` varchar(255) NOT NULL,
   `description` mediumtext,
   `typeid` int NOT NULL,
+  `roomid` int DEFAULT NULL,
+  `action` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`pkid`),
   UNIQUE KEY `pkid_UNIQUE` (`pkid`),
   UNIQUE KEY `shortname_UNIQUE` (`shortname`),
   UNIQUE KEY `longname_UNIQUE` (`longname`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -653,7 +657,91 @@ CREATE TABLE `resources_worldobjects` (
 
 LOCK TABLES `resources_worldobjects` WRITE;
 /*!40000 ALTER TABLE `resources_worldobjects` DISABLE KEYS */;
+INSERT INTO `resources_worldobjects` VALUES (1,'registerStone','Registration Stone','A glowing stone hovers in the air, beckoning you to touch it.',0,1,'registerStart');
 /*!40000 ALTER TABLE `resources_worldobjects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `server_preset_options`
+--
+
+DROP TABLE IF EXISTS `server_preset_options`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `server_preset_options` (
+  `pkid` int NOT NULL AUTO_INCREMENT,
+  `preset_pkid` int NOT NULL,
+  `fieldname` varchar(45) NOT NULL,
+  `fieldvalue1` decimal(10,2) NOT NULL,
+  `fieldvalue2` decimal(10,2) DEFAULT NULL,
+  `fieldvalue3` decimal(10,2) DEFAULT NULL,
+  `fieldvalue4` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`pkid`),
+  UNIQUE KEY `pkid_UNIQUE` (`pkid`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server_preset_options`
+--
+
+LOCK TABLES `server_preset_options` WRITE;
+/*!40000 ALTER TABLE `server_preset_options` DISABLE KEYS */;
+INSERT INTO `server_preset_options` VALUES (1,1,'Strength',1.00,10.00,NULL,NULL),(2,1,'Perception',1.00,10.00,NULL,NULL),(3,1,'Endurance',1.00,10.00,NULL,NULL),(4,1,'Charisma',1.00,10.00,NULL,NULL),(5,1,'Intelligence',1.00,10.00,NULL,NULL),(6,1,'Agility',1.00,10.00,NULL,NULL),(7,1,'Luck',1.00,10.00,NULL,NULL),(8,2,'Health',0.00,100.00,NULL,NULL),(9,2,'Hunger',0.00,100.00,NULL,NULL),(10,2,'Thirst',0.00,100.00,NULL,NULL),(11,2,'BodyTemp',0.00,100.00,NULL,NULL),(12,2,'Energy',0.00,100.00,NULL,NULL);
+/*!40000 ALTER TABLE `server_preset_options` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `server_preset_types`
+--
+
+DROP TABLE IF EXISTS `server_preset_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `server_preset_types` (
+  `pkid` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  PRIMARY KEY (`pkid`),
+  UNIQUE KEY `pkid_UNIQUE` (`pkid`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server_preset_types`
+--
+
+LOCK TABLES `server_preset_types` WRITE;
+/*!40000 ALTER TABLE `server_preset_types` DISABLE KEYS */;
+INSERT INTO `server_preset_types` VALUES (1,'attribute_system'),(2,'skill_system');
+/*!40000 ALTER TABLE `server_preset_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `server_presets`
+--
+
+DROP TABLE IF EXISTS `server_presets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `server_presets` (
+  `pkid` int NOT NULL AUTO_INCREMENT,
+  `type` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` mediumtext NOT NULL,
+  PRIMARY KEY (`pkid`),
+  UNIQUE KEY `pkid_UNIQUE` (`pkid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server_presets`
+--
+
+LOCK TABLES `server_presets` WRITE;
+/*!40000 ALTER TABLE `server_presets` DISABLE KEYS */;
+INSERT INTO `server_presets` VALUES (1,1,'S.P.E.C.I.A.L.','System made famous by the Fallout franchise.'),(2,1,'Survivalist','Attribute system for wilderness survival-style games.');
+/*!40000 ALTER TABLE `server_presets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -693,4 +781,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-31  3:37:09
+-- Dump completed on 2022-07-31 19:45:22

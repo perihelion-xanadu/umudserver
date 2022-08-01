@@ -156,9 +156,10 @@ span.fromyou {
 #roombox .roomdesc {color: white; font-weight: normal; text-align: justify; margin: 5px; padding: 0; line-height: 1.5; font-size: 0.8em;}
 #roombox #roomobject { padding: 5px; margin: 5px; margin-top: 50px; line-height: 1; text-align: left; outline: 2px inset green; }
 #roombox .roomobjecttitle {padding: 0; margin: 5px; line-height: 1; text-align: center; }
-#roomobject tr {padding: 0; margin: 0; margin-top: 10px; line-height: 1; text-align: left; font-size: 0.7em;}
+#roomobject p {padding: 0; margin: 0; margin-top: 10px; line-height: 1; text-align: left; font-size: 0.7em;}
 #roomobject .roomobjectpkid {color: yellow; }
 #roomobject .roomobjectdesc {color: orange; }
+#roomobject p:hover span { background-color: rgba(20,200,200,0.6); cursor: pointer;}
 #currentroomexits { bottom: 10px; width: 100%; padding: 0; margin: 0; line-height: 1; text-align: left; }
 .roomexits p {display: grid; grid-template-columns: 20% 70% 10%; margin: 0; padding: 0; margin-bottom: 5px;}
 .roomexitdir { color: yellow; }
@@ -279,4 +280,27 @@ button.selected {background-color: DarkGray; color: white; border: 3px inset Dar
 	font-size: 12pt;
 	font-weight: bolder;
 	color: rgba(200,100,100,1);
+}
+
+.backmask {
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(255,255,255,0.5);
+	text-align: center;
+	vertical-align: middle;
+}
+.formwindow {
+	position: relative;
+	margin: auto;
+	padding: 20px;
+	display: inline-block;
+	background-color: black;
+	color: white;
+	vertical-align: middle;
+	border: 4px double goldenrod;
+	margin-top: 48vh;
 }

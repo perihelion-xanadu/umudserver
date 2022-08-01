@@ -31,6 +31,8 @@ socket.on("data", message => {
 			{ updateMap(test); }
         else if (i == "whodata")
 			{ updateWho(test); }
+		else if (i == "roomobjects")
+			{ updateRoomObjects(test); }
     }
 })
 
@@ -73,6 +75,122 @@ socket.on("globallog", message => {
     let output = JSON.parse(message);
     sendToGlobal(output.console);
 })
+
+socket.on("event", message => {
+	let eventData = message;
+	if (eventData.includes("Something")) {
+		console.log(eventData);
+	}
+	else {
+		switch(eventData) {
+			case "startPlayerRegister":
+				console.log('starting registration');
+				startPlayerRegister();
+				break;
+			default: 
+				break;
+		}
+	}
+})
+
+function startPlayerRegister() {
+	createRegisterForm();
+}
+
+function createRegisterForm() {
+	var backMask = document.createElement("div");
+	backMask.setAttribute("class", "backmask");
+	backMask.setAttribute("id", "backmask");
+	var formWindow = document.createElement("div");
+	formWindow.setAttribute("class", "formwindow");
+	formWindow.setAttribute("id", "formwindow");
+	var formTitle = document.createElement("h4");
+	formTitle.innerText = "New Player Registration";
+	formWindow.appendChild(formTitle);
+	var formValidation = document.createElement("h5");
+	formValidation.setAttribute("id", "formValidation");
+	formWindow.appendChild(formValidation);
+	var formNameLabel = document.createElement("label");
+	formNameLabel.setAttribute("for", "player_name_input");
+	formNameLabel.innerText = "Player Name: ";
+	formWindow.appendChild(formNameLabel);
+	var formNameInput = document.createElement("input");
+	formNameInput.setAttribute("type", "text");
+	formNameInput.setAttribute("id", "player_name_input");
+	formNameInput.setAttribute("name", "player_name_input");
+	formWindow.appendChild(formNameInput);
+	var submitButton = document.createElement("button");
+	submitButton.innerText = "Register Player";
+	submitButton.setAttribute("id", "register_submit");
+	formWindow.appendChild(submitButton);
+	backMask.appendChild(formWindow);
+	document.body.appendChild(backMask);
+	var nameinput = document.getElementById("player_name_input");
+	nameinput.addEventListener("focusout", function() {
+		validateInput("playername", nameinput);
+	});
+	document.getElementById("register_submit").addEventListener("click", function() {
+		submitPlayerRegister(nameinput.value);
+	});
+}
+
+function validateInput(type, div) {
+	socket.emit("validateInput", type, div.value, (response) => {
+		switch(type) {
+			case "playername":
+				if (response == true) {
+					document.getElementById("formValidation").innerText = "Player Name is Available!";
+					document.getElementById("formValidation").setAttribute("class", "validate_true");
+					document.getElementById("register_submit").disabled = false;
+				}
+				else {
+					document.getElementById("formValidation").innerText = "That Name is Already Taken!";
+					document.getElementById("formValidation").setAttribute("class", "validate_false");
+					document.getElementById("register_submit").disabled = true;
+				}
+				break;
+			case "charactername":
+				if (response == true) {
+					document.getElementById("formValidation").innerText = "Character Name is Available!";
+					document.getElementById("formValidation").setAttribute("class", "validate_true");
+					document.getElementById("register_submit").disabled = false;
+				}
+				else {
+					document.getElementById("formValidation").innerText = "That Name is Already Taken!";
+					document.getElementById("formValidation").setAttribute("class", "validate_false");
+					document.getElementById("register_submit").disabled = true;
+				}
+				break;
+		}
+		
+	});
+}
+
+function submitPlayerRegister(name) {
+	socket.emit("createPlayer", name, (response) => {
+		if (response == "success") {
+			playerCreated();
+		}
+		else {
+			console.log(response);
+		}
+	});
+}
+
+function playerCreated() {
+	var formwindow = document.getElementById("formwindow");
+	formwindow.remove();
+	var formWindow = document.createElement("div");
+	formWindow.setAttribute("class", "formwindow");
+	formWindow.setAttribute("id", "formwindow");
+	var formTitle = document.createElement("h4");
+	formTitle.innerText = "Create Your First Character";
+	formWindow.appendChild(formTitle);
+}
+
+async function sendAction(action) {
+	socket.emit("data", JSON.stringify({ "command": action }));
+}
 
 function setCookie(cname, cvalue, exdays) {
 	const d = new Date();
@@ -227,6 +345,31 @@ function updateRoomData(messageBody) {
 	}
 	else {
 		document.getElementById("currentroomid").setAttribute("class", "option_enabled");
+	}
+}
+
+function updateRoomObjects(message) {
+	if (message.roomobjects.length > 0) {
+		var currentobjects = document.getElementById("roomobjecttable");
+		var roomObjects = message.roomobjects;
+		for (let i=0; i<roomObjects.length; i++) {
+			var newObject = document.createElement("p");
+			newObject.setAttribute("id", "roomObject_" + roomObjects[i].pkid);
+			newObject.setAttribute("data-tooltip", roomObjects[i].longname);
+			var newPKID = document.createElement("span");
+			newPKID.setAttribute("class", "roomobjectpkid");
+			newPKID.style.display = "none";
+			newPKID.innerText = roomObjects[i].pkid;
+			newObject.appendChild(newPKID);
+			var newDesc = document.createElement("span");
+			newDesc.setAttribute("class", "roomobjectdesc");
+			newDesc.innerText = roomObjects[i].description;
+			newObject.appendChild(newDesc);
+			currentobjects.appendChild(newObject);
+			document.getElementById("roomObject_" + roomObjects[i].pkid).addEventListener("mousedown", function() {
+				sendAction(roomObjects[i].action);
+			});			
+		}
 	}
 }
 

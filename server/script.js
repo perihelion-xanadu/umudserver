@@ -28,9 +28,26 @@ const query = util.promisify(con.query).bind(con);
 const clients = new Map();
 var py = 1;
 
+var actionList = new Array();
+(async () => {
+	try {
+		const rows = await query("SELECT * FROM `umudserver`.`actions` ORDER BY categoryid ASC");
+		if (rows.length == 0) {
+			return false;
+		}
+		else {
+			for (let i=0; i<rows.length; i++) {
+				actionList.push(rows[i]);
+			}
+		}
+	} finally {
+
+	}
+})();
+
+
 io.on("connection", socket => {
     console.log("connected");
-    const color = Math.floor(Math.random() * 360);
     const name = "Unregistered Player " + py;
     const roomid = 1;
     const x = 0;
@@ -38,6 +55,7 @@ io.on("connection", socket => {
     const z = 0;
 	const title = "Unregistered User";
 	const tag = "";
+	const pkid = -1;
     socket.data.name = name;
     socket.data.roomid = roomid;
     socket.data.x = x;
@@ -45,6 +63,7 @@ io.on("connection", socket => {
     socket.data.z = z;
 	socket.data.title = title;
 	socket.data.tag = tag;
+	socket.data.pkid = pkid;
 	
 	socket.emit("serverlog", JSON.stringify({
 		"console": "server is connected"
@@ -56,7 +75,8 @@ io.on("connection", socket => {
         y,
         z,
 		title,
-		tag
+		tag,
+		pkid
     };
 
     clients.set(socket, metadata);
@@ -79,8 +99,47 @@ io.on("connection", socket => {
         clients.delete(socket);
         updateRoom();
     });
+	
+	socket.on("validateInput", async (type, name, callback) => {
+		var result = "";
+		switch(type) {
+			case "playername":
+				result = await validatePlayerName(name);
+				break;
+			case "charactername":
+				result = await validateCharacterName(name);
+				break;
+			default:
+				break;
+		}
+		callback(result);
+	})
     updateRoom();
 })
+
+async function validateCharacterName(name) {
+	try {
+		const rows = await query("SELECT * FROM characters WHERE name = '" + name + "'");
+		if (rows.length == 0) {
+			return true;
+		}
+		else return false;
+	} finally {
+		
+	}
+}
+
+async function validatePlayerName(name) {
+	try {
+		const rows = await query("SELECT * FROM players WHERE name = '" + name + "'");
+		if (rows.length == 0) {
+			return true;
+		}
+		else return false;
+	} finally {
+		
+	}
+}
 
 async function loginCharacter(name, metadata, ws) {
 	const player = new Object();
@@ -89,12 +148,14 @@ async function loginCharacter(name, metadata, ws) {
 		player.name = rows[0].name;
 		player.tag = rows[0].tag;
 		player.title = rows[0].title;
+		player.pkid = rows[0].pkid;
 		player.roomid = rows[0].currentroompkid;
 	} finally {
 		metadata.name = player.name;
 		metadata.roomid = player.roomid;
 		metadata.title = player.title;
 		metadata.tag = player.tag;
+		metadata.pkid = player.pkid;
 		charData2(player, metadata, ws);
 	}
 }
@@ -169,6 +230,19 @@ async function roomData(pkid, metadata, ws) {
         queueOutput(dataoutput, metadata, ws);
 	} finally {
 		roomExits(pkid, metadata, ws);
+		roomObjects(metadata, ws);
+	}
+}
+
+async function roomObjects(metadata, ws) {
+	try {
+		const rows = await query("SELECT * FROM resources_worldobjects WHERE roomid = " + metadata.roomid);
+		const dataoutput = JSON.stringify({
+			"roomobjects": rows
+		});
+		queueOutput(dataoutput, metadata, ws);
+	} finally {
+		
 	}
 }
 
@@ -230,6 +304,15 @@ async function moveToRoom(x, y, z, metadata, ws) {
 	}
 }
 
+function startPlayerRegister(metadata, ws) {
+	if (metadata.pkid === -1) {
+		ws.emit("event", "startPlayerRegister");
+	}
+	else {
+		ws.emit("event", "Something went wrong!");
+	}
+}
+
 async function cmdParse(command, metadata, ws) {
     const text = command;
     const cmdArray = text.split(" ");
@@ -271,6 +354,9 @@ async function cmdParse(command, metadata, ws) {
         case "getwhodata":
             getWhoData(metadata, ws);
             break;
+		case "registerstart":
+			startPlayerRegister(metadata, ws);
+			break;
         case "look":
 		case "l":
             roomData(metadata.roomid, metadata, ws);
