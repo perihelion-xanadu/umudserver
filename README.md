@@ -36,6 +36,11 @@ The server is data-agnostic in order to accommodate the widest level of settings
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## To Do Next:
+	- Disconnect MySQL after inactivity timeout
+	- Standardize Websocket Commands
+
+
 ## Roadmap (Very subject to change!)
 
 - Server
