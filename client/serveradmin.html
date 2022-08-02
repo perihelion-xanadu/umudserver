@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>    
+    <style>
+		body { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: 0; padding: 0; background-color: black; color: white; }
+		#mainwindow { display: flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; position: relative; height: 90vh; width: 90vw; margin: auto; margin-top: 5vh; padding: 10px; border: 6px double goldenrod; border-radius: 20px; background-color: rgba(5, 5, 5, 0.5); }
+		#basics { display: inline-block; position: relative; max-width: 25%; max-height: 50%; padding: 10px; margin: 10px; border: 4px double green; border-radius: 20px; }
+		#server_storage { display: inline-grid; grid-template-columns: auto auto auto; position: relative; width: 90%; padding: 10px; margin: 10px; border: 2px double white; border-radius: 20px; }
+		#basics h3 { text-align: center; }
+		#systems { display: inline-grid; grid-template-columns: 40% 40% 20%; position: relative; max-width: 25%; max-height: 50%; padding: 10px; margin: 10px; border: 4px double green; border-radius: 20px; }
+		#systems h3 { text-align: center; grid-column: 1 / span 3;}
+		#systems label { grid-column: 1; }
+		#selection_info { display: inline-flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; align-items: stretch; max-width: 70%; max-height: 90%; border: 4px double green; border-radius: 20px; margin: 10px; padding: 10px; font-size: 10pt; flex-grow: 2; }
+		table, th, td { border: 1px solid white; padding: 5px; }
+		table { max-width: 90%; margin: 10px; }
+		#selection_info h3 { text-align: center; }
+		#class_preset, #attribute_preset, #advancement_preset, #equipment_preset, #inventory_preset { display: inline-block; flex-grow: 1; flex-shrink: 1; max-width: 30%; }
+	</style>
+	<script type="module">
+		import {io} from "socket.io-client";
+
+		const socket = io("http://192.168.0.110:3000");
+		
+		var serverData;
+		
+		socket.on("connect", () => {
+			console.log("connected");
+			socket.emit("admin", "getServerData", (response) => {
+				if (response != "ERROR") {
+					serverData = response;
+					populateBasics();
+				}
+			})
+			socket.emit("admin", "getAllPresets", (response) => {
+				if (response != "ERROR") {
+					var data = response;
+					populatePresetLists(data);
+				}
+			})
+		})
+		
+		var attributeList = document.getElementById("attribute_system");
+		var classList = document.getElementById("class_system");
+		var advancementList = document.getElementById("advancement_system");
+		var equipmentList = document.getElementById("equipment_system");
+		var inventoryList = document.getElementById("inventory_system");
+		var attributeButton = document.getElementById("attribute_system_submit");
+		var classButton = document.getElementById("class_system_submit");
+		var advancementButton = document.getElementById("advancement_system_submit");
+		var equipmentButton = document.getElementById("equipment_system_submit");
+		var inventoryButton = document.getElementById("inventory_system_submit");
+		var selectedAttribute = document.getElementById("selected_attribute_preset");
+		var selectedClass = document.getElementById("selected_class_preset");
+		var selectedAdvancement = document.getElementById("selected_advancement_preset");
+		var selectedEquipment = document.getElementById("selected_equipment_preset");
+		var selectedInventory = document.getElementById("selected_inventory_preset");
+		var attributeDefaults = document.getElementById("default_attributes");
+		var classDefaults = document.getElementById("class_defaults");
+		var advancementDefaults = document.getElementById("advancement_defaults");
+		var equipmentDefaults = document.getElementById("equipment_defaults");
+		var inventoryDefaults = document.getElementById("inventory_defaults");
+		
+		attributeButton.addEventListener("click", function() {
+			selectPreset(attributeList.value, 1);
+		});
+		classButton.addEventListener("click", function() {
+			selectPreset(classList.value, 5);
+		});
+		advancementButton.addEventListener("click", function() {
+			selectPreset(advancementList.value, 2);
+		});
+		equipmentButton.addEventListener("click", function() {
+			selectPreset(equipmentList.value, 3);
+		});
+		inventoryButton.addEventListener("click", function() {
+			selectPreset(inventoryList.value, 4);
+		});
+		
+		function selectPreset(pkid, type) {
+			socket.emit("selectPreset", pkid + "," + type, (response) => {
+				if (response != "ERROR") {
+					populateSelectedInfo(response);
+				}
+			});
+		}	
+		
+		function populateSelectedInfo(data) {
+			console.log(data);
+			
+			
+			switch (data[0].presetType) {
+				case 1:
+					while (attributeDefaults.rows.length > 1) {
+						attributeDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedAttribute.innerText = data[i].name;
+						var row = attributeDefaults.insertRow();
+						var fieldname = row.insertCell(0);
+						fieldname.innerText = data[i].fieldname;
+						var fieldmin = row.insertCell(1);
+						fieldmin.innerText = data[i].fieldvalue1;
+						var fieldmax = row.insertCell(2);
+						fieldmax.innerText = data[i].fieldvalue2;
+					}
+					break;
+				case 2:
+					break;
+				case 3:
+					while (equipmentDefaults.rows.length > 1) {
+						equipmentDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedEquipment.innerText = data[i].name;
+						var row = equipmentDefaults.insertRow();
+						var location = row.insertCell(0);
+						location.innerText = data[i].location_name;
+						var type = row.insertCell(1);
+						type.innerText = data[i].type;
+					}
+					break;
+				case 4:
+					while (inventoryDefaults.rows.length > 1) {
+						inventoryDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedInventory.innerText = data[i].name;
+						var row = inventoryDefaults.insertRow();
+						var name = row.insertCell(0);
+						name.innerText = data[i].typeName;
+						var itemtype = row.insertCell(1);
+						itemtype.innerText = data[i].item_type;
+						var min = row.insertCell(2);
+						min.innerText = data[i].size1;
+						var max = row.insertCell(3);
+						max.innerText = data[i].size2;						
+					}
+					break;
+				case 5:
+					break;
+				default:
+					break;
+			}
+			
+		}
+		
+		function populatePresetLists(data) {
+			var attributeList = document.getElementById("attribute_system");
+			attributeList.innerHTML = "";
+			var classList = document.getElementById("class_system");
+			classList.innerHTML = "";
+			var advancementList = document.getElementById("advancement_system");
+			advancementList.innerHTML = "";
+			var equipmentList = document.getElementById("equipment_system");
+			equipmentList.innerHTML = "";
+			var inventoryList = document.getElementById("inventory_system");
+			inventoryList.innerHTML = "";
+			for (let i in data) {
+				var option = document.createElement("option");
+				option.value = data[i].pkid;
+				option.innerText = data[i].name;
+				if (data[i].type == 1) {
+					attributeList.appendChild(option);
+				}
+				else if (data[i].type == 2) {
+					advancementList.appendChild(option);
+				}
+				else if (data[i].type == 3) {
+					equipmentList.appendChild(option);
+				}
+				else if (data[i].type == 4) {
+					inventoryList.appendChild(option);
+				}
+				else if (data[i].type == 5) {
+					classList.appendChild(option);
+				}
+			}
+		}
+		
+		function populateBasics() {
+			var serverName = document.getElementById("server_name");
+			var serverPort = document.getElementById("server_port");
+			var serverStorageType = document.getElementById("server_storage_list");
+			var serverStorageHost = document.getElementById("server_storage_hostname");
+			var serverStorageUser = document.getElementById("server_storage_username");
+			var serverStoragePassword = document.getElementById("server_storage_password");
+			var serverStorageCatalogue = document.getElementById("server_storage_catalogue");
+			serverName.value = serverData.server_name;
+			serverPort.value = serverData.server_port;
+			serverStorageHost.value = serverData.server_backend_mysql_host;
+			serverStorageUser.value = serverData.server_backend_mysql_username;
+			serverStoragePassword.value = serverData.server_backend_mysql_password;
+			serverStorageCatalogue.value = serverData.server_backend_mysql_dbo;
+		}
+		
+	</script>
+</head>
+<body>
+	<div id="mainwindow">
+		<div id="basics">
+			<h3>Server Basics</h3>
+			<label for="server_name">Server Name: </label>
+			<input type="text" name="server_name" id="server_name"></input>
+			<button id="server_name_submit">Apply</button>
+			<br />
+			<label for="server_port">Server Port: </label>
+			<input type="text" name="server_port" id="server_port" size="5" disabled></input>
+			<br />
+			<div id="server_storage">
+				<label for="server_storage_list">Server Storage Type: </label>
+				<select id="server_storage_list" disabled>
+					<option value="mysql" selected>MySQL</option>
+				</select>
+				<br />
+				<label for="server_storage_hostname">Server Storage Hostname: </label>
+				<input type="text" name="server_storage_hostname" id="server_storage_hostname"></input>
+				<br />
+				<label for="server_storage_username">Server Storage Username: </label>
+				<input type="text" name="server_storage_username" id="server_storage_username"></input>
+				<br />
+				<label for="server_storage_password">Server Storage Password: </label>
+				<input type="text" name="server_storage_password" id="server_storage_password" readonly></input>
+				<br />
+				<label for="server_storage_catalogue">Server Storage Catalogue: </label>
+				<input type="text" name="server_storage_catalogue" id="server_storage_catalogue"></input>
+			</div>
+		</div>
+		<div id="systems">
+			<h3>Server Systems</h3>
+			<label for="attribute_system">Attribute System: </label>
+			<select id="attribute_system">			
+			</select>
+			<button id="attribute_system_submit" class="submit">Apply</button>
+			<br />
+			<label for="class_system">Class System: </label>
+			<select id="class_system">
+			</select>
+			<button id="class_system_submit" class="submit">Apply</button>
+			<br />
+			<label for="advancement_system">Advancement System: </label>
+			<select id="advancement_system">
+			</select>
+			<button id="advancement_system_submit" class="submit">Apply</button>
+			<br />
+			<label for="equipment_system">Equipment System: </label>
+			<select id="equipment_system">
+			</select>
+			<button id="equipment_system_submit" class="submit">Apply</button>
+			<br />
+			<label for="inventory_system">Inventory System: </label>
+			<select id="inventory_system">
+			</select>
+			<button id="inventory_system_submit" class="submit">Apply</button>
+		</div>
+		<div id="selection_info">
+			<h3>Selection Info</h3>
+			<div id="attribute_preset">
+				<label for="selected_attribute_preset">Selected Attribute Preset:</label>
+				<span id="selected_attribute_preset"></span>
+				<br />
+				<table id="default_attributes">
+					<caption>Default Attributes</caption>
+					<tr>
+						<th>Name</th>
+						<th>Min</th>
+						<th>Max</th>
+					</tr>
+				</table>
+			</div>
+			<div id="class_preset">
+				<label for="selected_class_preset">Selected Class Preset:</label>
+				<span id="selected_class_preset"></span>
+				<br />
+				<table id="class_defaults">
+					<caption>Class Defaults</caption>
+					<tr>
+						<th>Class Selection</th>
+						<th>Max Classes</th>
+						<th>Other Notes</th>
+					</tr>
+				</table>
+			</div>
+			<div id="advancement_preset">
+				<label for="selected_advancement_preset">Selected Advancement Preset:</label>
+				<span id="selected_advancement_preset"></span>
+				<br />
+				<table id="advancement_defaults">
+					<caption>Advancement Defaults</caption>
+					<tr>
+						<th>Level System</th>
+						
+					</tr>
+				</table>
+			</div>
+			<div id="equipment_preset">
+				<label for="selected_equipment_preset">Selected Equipment Preset:</label>
+				<span id="selected_equipment_preset"></span>
+				<br />
+				<table id="equipment_defaults">
+					<caption>Equipment System Defaults</caption>
+					<tr>
+						<th>Equip Location</th>
+						<th>Equipment Type</th>
+					</tr>
+				</table>
+			</div>
+			<div id="inventory_preset">
+				<label for="selected_inventory_preset">Selected Inventory Preset:</label>
+				<span id="selected_inventory_preset"></span>
+				<br />
+				<table id="inventory_defaults">
+					<caption>Inventory System Defaults</caption>
+					<tr>
+						<th>Inventory Type</th>
+						<th>Item Type</th>
+						<th>Size Min</th>
+						<th>Size Max</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

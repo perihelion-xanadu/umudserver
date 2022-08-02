@@ -114,8 +114,81 @@ io.on("connection", socket => {
 		}
 		callback(result);
 	})
+	
+	socket.on("admin", async ( command, callback) => {
+		var result;
+		switch(command) {
+			case "getServerData":
+				result = servercfg;
+				break;
+			case "getAllPresets":
+				result = await getAllPresets();
+				break;
+			case "selectPreset":
+				result = await getPresetData(command.selectPreset);
+				break;
+			default:
+				break;
+		}
+		callback(result);
+	})
+	socket.on("selectPreset", async ( data, callback) => {
+		
+		var result = await getPresetData(data.toString());
+		console.log(result);
+		callback(result);
+	})
     updateRoom();
 })
+
+async function getPresetData(data) {
+	var dataArr = data.split(",");
+	var pkid = dataArr[0];
+	var type = dataArr[1];
+	var sql = "";
+	switch(type) {
+		case '1':
+			sql = "SELECT P.name, P.type AS presetType, PO.* FROM server_presets AS P LEFT JOIN server_preset_options PO ON PO.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
+			break;
+		case '2':
+			break;
+		case '3':
+			sql = "SELECT P.name, P.type AS presetType, PE.* FROM server_presets AS P LEFT JOIN server_preset_equipmentslots PE ON PE.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
+			break;
+		case '4':
+			sql = "SELECT P.name, P.type AS presetType, PI.pkid, PI.preset_pkid, PI.name AS typeName, PI.item_type, PI.size1, PI.size2 FROM server_presets AS P LEFT JOIN server_preset_inventory PI ON PI.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY PI.pkid ASC";
+			break;
+		case '5':
+			break;
+		default:
+			break;
+	}
+	try {
+		const rows = await query(sql);
+		if (rows.length == 0) {
+			return "ERROR";
+		}
+		else {
+			return rows;
+		}
+	} finally {
+		
+	}
+}
+
+async function getAllPresets() {
+	try {
+		const rows = await query("SELECT * FROM server_presets ORDER BY type ASC");
+		if (rows.length == 0) {
+			return "ERROR";
+		}
+		else {
+			return rows;
+		}
+	} finally {
+		
+	}
+}
 
 async function validateCharacterName(name) {
 	try {

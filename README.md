@@ -44,7 +44,7 @@ For example, a server might be configured to use the S.P.E.C.I.A.L. Attribute sy
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## To Do Next:
+	## To Do Next:
 	- Disconnect MySQL after inactivity timeout
 	- Standardize Websocket Commands Based on Actions
 
