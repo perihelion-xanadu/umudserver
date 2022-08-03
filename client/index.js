@@ -17,6 +17,7 @@ function sendLook() {
 socket.on("connect", () => {
     sendToConsole('You connected with id: ' + socket.id);
     sendLook();
+	updateFavicon();
     socketId = socket.id;
 })
 
@@ -92,6 +93,25 @@ socket.on("event", message => {
 		}
 	}
 })
+
+function updateFavicon() {
+	var favicon = document.getElementById("favicon");
+	var faviconSize = 16;
+	var canvas = document.createElement("canvas");
+	canvas.width = faviconSize;
+	canvas.height = faviconSize;
+	var context = canvas.getContext('2d');
+	var img = document.createElement("img");
+	img.src = favicon.href;
+	img.onload = () => {
+		context.drawImage(img, 0, 0, faviconSize, faviconSize);
+		context.beginPath();
+		context.arc( canvas.width - faviconSize / 2, faviconSize / 2, faviconSize / 2, 0, 2*Math.PI);
+		context.fillStyle = '#00FF00';
+		context.fill();
+		favicon.href = canvas.toDataURL('image/png');
+	};
+}
 
 function startPlayerRegister() {
 	createRegisterForm();

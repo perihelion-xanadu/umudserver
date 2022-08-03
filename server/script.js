@@ -135,7 +135,6 @@ io.on("connection", socket => {
 	socket.on("selectPreset", async ( data, callback) => {
 		
 		var result = await getPresetData(data.toString());
-		console.log(result);
 		callback(result);
 	})
     updateRoom();
@@ -163,6 +162,7 @@ async function getPresetData(data) {
 		default:
 			break;
 	}
+	if (sql == "") return "ERROR";
 	try {
 		const rows = await query(sql);
 		if (rows.length == 0) {

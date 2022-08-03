@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>    
+    <title>Document</title>
+	<link id="favicon" rel="icon" href="favicon.png" type="image/png" sizes="16x16">
     <style>
 		body { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: 0; padding: 0; background-color: black; color: white; }
 		#mainwindow { display: flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; position: relative; height: 90vh; width: 90vw; margin: auto; margin-top: 5vh; padding: 10px; border: 6px double goldenrod; border-radius: 20px; background-color: rgba(5, 5, 5, 0.5); }
@@ -15,7 +16,7 @@
 		#systems h3 { text-align: center; grid-column: 1 / span 3;}
 		#systems label { grid-column: 1; }
 		#selection_info { display: inline-flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; align-items: stretch; max-width: 70%; max-height: 90%; border: 4px double green; border-radius: 20px; margin: 10px; padding: 10px; font-size: 10pt; flex-grow: 2; }
-		table, th, td { border: 1px solid white; padding: 5px; }
+		table, th, td { border: 1px solid white; padding: 5px; border-radius: 5px; }
 		table { max-width: 90%; margin: 10px; }
 		#selection_info h3 { text-align: center; }
 		#class_preset, #attribute_preset, #advancement_preset, #equipment_preset, #inventory_preset { display: inline-block; flex-grow: 1; flex-shrink: 1; max-width: 30%; }
@@ -29,6 +30,7 @@
 		
 		socket.on("connect", () => {
 			console.log("connected");
+			updateFavicon();
 			socket.emit("admin", "getServerData", (response) => {
 				if (response != "ERROR") {
 					serverData = response;
@@ -42,6 +44,25 @@
 				}
 			})
 		})
+		
+		function updateFavicon() {
+			var favicon = document.getElementById("favicon");
+			var faviconSize = 16;
+			var canvas = document.createElement("canvas");
+			canvas.width = faviconSize;
+			canvas.height = faviconSize;
+			var context = canvas.getContext('2d');
+			var img = document.createElement("img");
+			img.src = favicon.href;
+			img.onload = () => {
+				context.drawImage(img, 0, 0, faviconSize, faviconSize);
+				context.beginPath();
+				context.arc( canvas.width - faviconSize / 2, faviconSize / 2, faviconSize / 2, 0, 2*Math.PI);
+				context.fillStyle = '#00FF00';
+				context.fill();
+				favicon.href = canvas.toDataURL('image/png');
+			};
+		}
 		
 		var attributeList = document.getElementById("attribute_system");
 		var classList = document.getElementById("class_system");
@@ -88,10 +109,7 @@
 			});
 		}	
 		
-		function populateSelectedInfo(data) {
-			console.log(data);
-			
-			
+		function populateSelectedInfo(data) {			
 			switch (data[0].presetType) {
 				case 1:
 					while (attributeDefaults.rows.length > 1) {
