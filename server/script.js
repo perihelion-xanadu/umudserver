@@ -147,18 +147,22 @@ async function getPresetData(data) {
 	var sql = "";
 	switch(type) {
 		case '1':
-			sql = "SELECT P.name, P.type AS presetType, PO.* FROM server_presets AS P LEFT JOIN server_preset_options PO ON PO.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
+			sql = "SELECT P.name, P.description, P.type AS presetType, PO.* FROM server_presets AS P LEFT JOIN preset_attributes PO ON PO.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
 			break;
 		case '2':
+			sql = "SELECT P.name, P.description, P.type AS presetType, PA.* FROM server_presets AS P LEFT JOIN preset_advancement PA ON PA.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
 			break;
 		case '3':
-			sql = "SELECT P.name, P.type AS presetType, PE.* FROM server_presets AS P LEFT JOIN server_preset_equipmentslots PE ON PE.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
+			sql = "SELECT P.name, P.description, P.type AS presetType, PE.* FROM server_presets AS P LEFT JOIN preset_equipment PE ON PE.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY pkid ASC";
 			break;
 		case '4':
-			sql = "SELECT P.name, P.type AS presetType, PI.pkid, PI.preset_pkid, PI.name AS typeName, PI.item_type, PI.size1, PI.size2 FROM server_presets AS P LEFT JOIN server_preset_inventory PI ON PI.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY PI.pkid ASC";
+			sql = "SELECT P.name, P.description, P.type AS presetType, PI.pkid, PI.preset_pkid, PI.name AS typeName, PI.item_type, PI.size1, PI.size2 FROM server_presets AS P LEFT JOIN preset_inventory PI ON PI.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY PI.pkid ASC";
 			break;
 		case '5':
+			sql = "SELECT P.name, P.description, P.type AS presetType, PC.* FROM server_presets AS P LEFT JOIN preset_classes PC ON PC.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY PC.pkid ASC";
 			break;
+		case '7':
+			sql = "SELECT P.name, P.description, P.type AS presetType, PR.* FROM server_presets AS P LEFT JOIN preset_races PR ON PR.preset_pkid = P.pkid WHERE P.pkid = '" + pkid + "' ORDER BY PR.pkid ASC";
 		default:
 			break;
 	}

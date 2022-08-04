@@ -15,11 +15,17 @@
 		#systems { display: inline-grid; grid-template-columns: 40% 40% 20%; position: relative; max-width: 25%; max-height: 50%; padding: 10px; margin: 10px; border: 4px double green; border-radius: 20px; }
 		#systems h3 { text-align: center; grid-column: 1 / span 3;}
 		#systems label { grid-column: 1; }
-		#selection_info { display: inline-flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; align-items: stretch; max-width: 70%; max-height: 90%; border: 4px double green; border-radius: 20px; margin: 10px; padding: 10px; font-size: 10pt; flex-grow: 2; }
+		#selection_info { display: inline-flex; flex-direction: column; flex-wrap: wrap; align-content: stretch; align-items: stretch; width: 65%; max-height: 90%; border: 4px double green; border-radius: 20px; margin: 10px; padding: 10px; font-size: 10pt; flex-grow: 2; }
 		table, th, td { border: 1px solid white; padding: 5px; border-radius: 5px; }
-		table { max-width: 90%; margin: 10px; }
+		table { width: 90%; margin: 10px; }
 		#selection_info h3 { text-align: center; }
-		#class_preset, #attribute_preset, #advancement_preset, #equipment_preset, #inventory_preset { display: inline-block; flex-grow: 1; flex-shrink: 1; max-width: 30%; }
+		#class_preset, #attribute_preset, #advancement_preset, #equipment_preset, #inventory_preset, #race_preset { display: inline-block; flex-grow: 1; flex-shrink: 1; text-align: center; min-width: 32%; max-width: 48%; }
+		#attribute_select_button, #attribute_customize_button { display: none; position: relative; align-self: center; }
+		.preset_title { background-color: goldenrod; padding-left: 10px; padding-right: 10px; color: black; font-weight: bolder; }
+		.preset_description { font-family: Consolas; color: gold; margin-left: 10px; padding: 5px; }
+		.preset_description:hover { cursor: help; }
+		.preset_description:after { content: attr(data-text); position: absolute; margin-left: 15px; width: 200px; padding: 10px; border-radius: 10px; background-color: rgba(10,10,10,0.7); color: white; text-align: center; display: none; } 
+		.preset_description:hover:after { display: block; }
 	</style>
 	<script type="module">
 		import {io} from "socket.io-client";
@@ -69,21 +75,25 @@
 		var advancementList = document.getElementById("advancement_system");
 		var equipmentList = document.getElementById("equipment_system");
 		var inventoryList = document.getElementById("inventory_system");
+		var raceList = document.getElementById("race_system");
 		var attributeButton = document.getElementById("attribute_system_submit");
 		var classButton = document.getElementById("class_system_submit");
 		var advancementButton = document.getElementById("advancement_system_submit");
 		var equipmentButton = document.getElementById("equipment_system_submit");
 		var inventoryButton = document.getElementById("inventory_system_submit");
+		var raceButton = document.getElementById("race_system_submit");
 		var selectedAttribute = document.getElementById("selected_attribute_preset");
 		var selectedClass = document.getElementById("selected_class_preset");
 		var selectedAdvancement = document.getElementById("selected_advancement_preset");
 		var selectedEquipment = document.getElementById("selected_equipment_preset");
 		var selectedInventory = document.getElementById("selected_inventory_preset");
+		var selectedRace = document.getElementById("selected_race_preset");
 		var attributeDefaults = document.getElementById("default_attributes");
 		var classDefaults = document.getElementById("class_defaults");
 		var advancementDefaults = document.getElementById("advancement_defaults");
 		var equipmentDefaults = document.getElementById("equipment_defaults");
 		var inventoryDefaults = document.getElementById("inventory_defaults");
+		var raceDefaults = document.getElementById("race_defaults");
 		
 		attributeButton.addEventListener("click", function() {
 			selectPreset(attributeList.value, 1);
@@ -100,6 +110,9 @@
 		inventoryButton.addEventListener("click", function() {
 			selectPreset(inventoryList.value, 4);
 		});
+		raceButton.addEventListener("click", function() {
+			selectPreset(raceList.value, 7);
+		});
 		
 		function selectPreset(pkid, type) {
 			socket.emit("selectPreset", pkid + "," + type, (response) => {
@@ -109,7 +122,7 @@
 			});
 		}	
 		
-		function populateSelectedInfo(data) {			
+		function populateSelectedInfo(data) {
 			switch (data[0].presetType) {
 				case 1:
 					while (attributeDefaults.rows.length > 1) {
@@ -125,8 +138,28 @@
 						var fieldmax = row.insertCell(2);
 						fieldmax.innerText = data[i].fieldvalue2;
 					}
+					document.getElementById("selected_attribute_preset_info").setAttribute("data-text", data[0].description);
+					document.getElementById("attribute_select_button").style.display = "inline";
+					document.getElementById("attribute_customize_button").style.display = "inline";
 					break;
 				case 2:
+					while (advancementDefaults.rows.length > 1) {
+						advancementDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedAdvancement.innerText = data[i].name;
+						var row = advancementDefaults.insertRow();
+						var field1 = row.insertCell(0);
+						field1.innerText = data[i].field1;
+						var value1 = row.insertCell(1);
+						value1.innerText = data[i].value1;
+						var field2 = row.insertCell(2);
+						field2.innerText = data[i].field2;
+						var value2 = row.insertCell(3);
+						value2.innerText = data[i].value2;
+						
+					}
+					document.getElementById("selected_advancement_preset_info").setAttribute("data-text", data[0].description);
 					break;
 				case 3:
 					while (equipmentDefaults.rows.length > 1) {
@@ -140,6 +173,7 @@
 						var type = row.insertCell(1);
 						type.innerText = data[i].type;
 					}
+					document.getElementById("selected_equipment_preset_info").setAttribute("data-text", data[0].description);
 					break;
 				case 4:
 					while (inventoryDefaults.rows.length > 1) {
@@ -157,9 +191,35 @@
 						var max = row.insertCell(3);
 						max.innerText = data[i].size2;						
 					}
+					document.getElementById("selected_inventory_preset_info").setAttribute("data-text", data[0].description);
 					break;
 				case 5:
+					while (classDefaults.rows.length > 1) {
+						classDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedClass.innerText = data[i].name;
+						var row = classDefaults.insertRow();
+						var name = row.insertCell(0);
+						name.innerText = data[i].class_name;
+						var itemtype = row.insertCell(1);
+						itemtype.innerText = data[i].class_notes;					
+					}
+					document.getElementById("selected_class_preset_info").setAttribute("data-text", data[0].description);
 					break;
+				case 7:
+					while (raceDefaults.rows.length > 1) {
+						raceDefaults.deleteRow(1);
+					}
+					for (let i=0; i<data.length; i++) {
+						selectedRace.innerText = data[i].name;
+						var row = raceDefaults.insertRow();
+						var name = row.insertCell(0);
+						name.innerText = data[i].race_name;
+						var itemtype = row.insertCell(1);
+						itemtype.innerText = data[i].race_notes;			
+					}
+					document.getElementById("selected_race_preset_info").setAttribute("data-text", data[0].description);
 				default:
 					break;
 			}
@@ -177,6 +237,8 @@
 			equipmentList.innerHTML = "";
 			var inventoryList = document.getElementById("inventory_system");
 			inventoryList.innerHTML = "";
+			var raceList = document.getElementById("race_system");
+			raceList.innerHTML = "";
 			for (let i in data) {
 				var option = document.createElement("option");
 				option.value = data[i].pkid;
@@ -195,6 +257,9 @@
 				}
 				else if (data[i].type == 5) {
 					classList.appendChild(option);
+				}
+				else if (data[i].type == 7) {
+					raceList.appendChild(option);
 				}
 			}
 		}
@@ -273,12 +338,18 @@
 			<select id="inventory_system">
 			</select>
 			<button id="inventory_system_submit" class="submit">Apply</button>
+			<br />
+			<label for="race_system">Race System: </label>
+			<select id="race_system">
+			</select>
+			<button id="race_system_submit" class="submit">Apply</button>
 		</div>
 		<div id="selection_info">
 			<h3>Selection Info</h3>
 			<div id="attribute_preset">
 				<label for="selected_attribute_preset">Selected Attribute Preset:</label>
-				<span id="selected_attribute_preset"></span>
+				<span id="selected_attribute_preset" class="preset_title"></span>
+				<span id="selected_attribute_preset_info" class="preset_description">?</span>
 				<br />
 				<table id="default_attributes">
 					<caption>Default Attributes</caption>
@@ -288,35 +359,54 @@
 						<th>Max</th>
 					</tr>
 				</table>
+				<button id="attribute_select_button">Select</button>
+				<button id="attribute_customize_button">Customize</button>
 			</div>
 			<div id="class_preset">
 				<label for="selected_class_preset">Selected Class Preset:</label>
-				<span id="selected_class_preset"></span>
+				<span id="selected_class_preset" class="preset_title"></span>
+				<span id="selected_class_preset_info" class="preset_description">?</span>
 				<br />
 				<table id="class_defaults">
 					<caption>Class Defaults</caption>
 					<tr>
-						<th>Class Selection</th>
-						<th>Max Classes</th>
-						<th>Other Notes</th>
+						<th>Class Name</th>
+						<th>Class Notes</th>
+					</tr>
+				</table>
+			</div>
+			<div id="race_preset">
+				<label for="selected_race_preset">Selected Race Preset:</label>
+				<span id="selected_race_preset" class="preset_title"></span>
+				<span id="selected_race_preset_info" class="preset_description">?</span>
+				<br />
+				<table id="race_defaults">
+					<caption>Race Defaults</caption>
+					<tr>
+						<th>Race Name</th>
+						<th>Race Notes</th>
 					</tr>
 				</table>
 			</div>
 			<div id="advancement_preset">
 				<label for="selected_advancement_preset">Selected Advancement Preset:</label>
-				<span id="selected_advancement_preset"></span>
+				<span id="selected_advancement_preset" class="preset_title"></span>
+				<span id="selected_advancement_preset_info" class="preset_description">?</span>
 				<br />
 				<table id="advancement_defaults">
 					<caption>Advancement Defaults</caption>
 					<tr>
-						<th>Level System</th>
-						
+						<th>Field 1</th>
+						<th>Value 1</th>
+						<th>Field 2</th>
+						<th>Value 2</th>
 					</tr>
 				</table>
 			</div>
 			<div id="equipment_preset">
 				<label for="selected_equipment_preset">Selected Equipment Preset:</label>
-				<span id="selected_equipment_preset"></span>
+				<span id="selected_equipment_preset" class="preset_title"></span>
+				<span id="selected_equipment_preset_info" class="preset_description">?</span>
 				<br />
 				<table id="equipment_defaults">
 					<caption>Equipment System Defaults</caption>
@@ -328,7 +418,8 @@
 			</div>
 			<div id="inventory_preset">
 				<label for="selected_inventory_preset">Selected Inventory Preset:</label>
-				<span id="selected_inventory_preset"></span>
+				<span id="selected_inventory_preset" class="preset_title"></span>
+				<span id="selected_inventory_preset_info" class="preset_description">?</span>
 				<br />
 				<table id="inventory_defaults">
 					<caption>Inventory System Defaults</caption>
